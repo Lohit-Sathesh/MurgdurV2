@@ -1,0 +1,9 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-tracing
+  namespace: murgdur
+data:
+  tempo.yaml: |
+    server:
+      http_listen_port: 3200

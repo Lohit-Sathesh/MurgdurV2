@@ -1,0 +1,7 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: murgdur
+data:
+  dashboards.json: '{"dashboards":[]}'

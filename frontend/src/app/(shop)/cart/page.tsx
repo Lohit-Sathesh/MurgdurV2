@@ -1,0 +1,2 @@
+﻿import { Button } from '@/components/ui/Button';
+export default function CartPage(){return <section className="mx-auto min-h-screen max-w-5xl px-6 py-section"><h1 className="font-serif text-5xl">Shopping bag</h1><div className="mt-10 grid gap-10 md:grid-cols-[1fr_320px]"><div className="border-y border-mist py-8">Your selected pieces will appear here.</div><aside className="border border-mist p-6"><p className="flex justify-between"><span>Subtotal</span><strong>$0</strong></p><Button className="mt-6">Prepare checkout</Button></aside></div></section>}

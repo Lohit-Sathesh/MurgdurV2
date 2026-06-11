@@ -1,0 +1,8 @@
+﻿generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+model User { id String @id @default(cuid()) email String @unique name String? role String @default("client") customerId String @unique addresses Address[] orders Order[] wishlist Wishlist[] createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
+model Address { id String @id @default(cuid()) userId String user User @relation(fields:[userId],references:[id]) line1 String line2 String? city String country String postal String createdAt DateTime @default(now()) }
+model Product { id String @id @default(cuid()) slug String @unique name String category String description String price Int media String[] orderItems OrderItem[] wishlists Wishlist[] createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
+model Wishlist { id String @id @default(cuid()) userId String productId String user User @relation(fields:[userId],references:[id]) product Product @relation(fields:[productId],references:[id]) createdAt DateTime @default(now()) @@unique([userId,productId]) }
+model Order { id String @id @default(cuid()) userId String user User @relation(fields:[userId],references:[id]) status String @default("processing") paymentStatus String @default("pending") items OrderItem[] createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
+model OrderItem { id String @id @default(cuid()) orderId String productId String quantity Int price Int order Order @relation(fields:[orderId],references:[id]) product Product @relation(fields:[productId],references:[id]) }

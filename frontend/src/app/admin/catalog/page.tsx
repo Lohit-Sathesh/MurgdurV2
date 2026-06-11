@@ -1,0 +1,1 @@
+﻿export default function CatalogAdminPage(){return <section className="px-6 py-section"><h1 className="font-serif text-5xl">Catalog management</h1><div className="mt-10 border-y border-mist py-8">Products, inventory, and collection states.</div></section>}

@@ -1,0 +1,2 @@
+﻿const orders=['MRG-1024','MRG-1025'];
+export default function OrdersPage(){return <section className="mx-auto min-h-screen max-w-5xl px-6 py-section"><h1 className="font-serif text-5xl">Orders</h1><div className="mt-10 divide-y divide-mist border-y border-mist">{orders.map((o)=><a key={o} href={`/orders/${o}`} className="flex items-center justify-between py-5"><span>{o}</span><span className="text-sm uppercase tracking-[0.22em] text-champagne">View</span></a>)}</div></section>}

@@ -1,0 +1,1 @@
+﻿export default function MediaUploadPage(){return <section className="px-6 py-section"><h1 className="font-serif text-5xl">Media upload</h1><form className="mt-10 border border-dashed border-champagne p-10"><input type="file" multiple /></form></section>}

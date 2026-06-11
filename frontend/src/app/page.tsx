@@ -1,0 +1,4 @@
+﻿import { HeroSlider } from '@/components/cinematic/HeroSlider';
+import { ScrollVideoPlayer } from '@/components/cinematic/ScrollVideoPlayer';
+export const revalidate = 300;
+export default function HomePage(){const collections=['Atelier Leather','Evening Objects','Travel Icons'];return <><HeroSlider/><section className="px-6 py-section md:px-12"><div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[1fr_1.4fr]"><h1 className="font-serif text-5xl leading-tight md:text-7xl">Murgdur</h1><div className="space-y-8"><p className="max-w-2xl text-lg leading-8 text-graphite">A cinematic storefront for considered materials, quiet craft, and resilient daily luxury.</p><div className="grid gap-4 md:grid-cols-3">{collections.map((c)=><a key={c} href={`/collections/${c.toLowerCase().replaceAll(' ','-')}`} className="border border-mist p-5 text-sm uppercase tracking-[0.22em] transition hover:border-champagne">{c}</a>)}</div></div></div></section><ScrollVideoPlayer/></>}

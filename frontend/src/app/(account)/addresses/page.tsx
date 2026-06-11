@@ -1,0 +1,1 @@
+﻿export default function AddressesPage(){return <section className="mx-auto min-h-screen max-w-4xl px-6 py-section"><h1 className="font-serif text-5xl">Address book</h1><div className="mt-10 border border-mist p-6"><p className="text-sm uppercase tracking-[0.22em] text-champagne">Primary</p><p className="mt-4 leading-7">Add your preferred delivery address.</p></div></section>}

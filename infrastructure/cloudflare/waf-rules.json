@@ -1,0 +1,1 @@
+﻿{"rules":[{"description":"Block obvious scraper user agents","expression":"http.user_agent contains \"scrapy\"","action":"block"}]}

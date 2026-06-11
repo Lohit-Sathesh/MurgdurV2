@@ -1,0 +1,11 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: murgdur
+data:
+  prometheus.yml: |
+    scrape_configs:
+      - job_name: murgdur-backend
+        static_configs:
+          - targets: ['backend:80']

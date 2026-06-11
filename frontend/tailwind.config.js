@@ -1,0 +1,2 @@
+﻿/** @type {import('tailwindcss').Config} */
+module.exports = { content: ['./src/**/*.{ts,tsx}'], theme: { extend: { colors: { ink: '#12110f', ivory: '#f7f3ec', champagne: '#c7a46b', graphite: '#252525', mist: '#e7e2d8' }, fontFamily: { serif: ['Luxury Serif','Georgia','serif'], sans: ['Luxury Sans','Inter','system-ui','sans-serif'] }, spacing: { section: 'clamp(4rem, 9vw, 8rem)' } } }, plugins: [] };
