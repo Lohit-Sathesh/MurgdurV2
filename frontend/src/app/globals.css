@@ -34,19 +34,4 @@ h1, h2, h3 { font-family: 'LuxurySerif', serif; font-weight: 300; letter-spacing
   color: #000;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #111111;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d4af37;
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #f5d76e;
-}
+::-webkit-scrollbar { display: none; }
