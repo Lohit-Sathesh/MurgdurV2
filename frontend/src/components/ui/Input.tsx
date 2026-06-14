@@ -1,2 +1,20 @@
-﻿import type { InputHTMLAttributes } from 'react';
-export function Input({label,...props}:InputHTMLAttributes<HTMLInputElement>&{label:string}){return <label className="grid gap-2 text-sm uppercase tracking-[0.18em] text-graphite">{label}<input className="min-h-12 border border-mist bg-transparent px-4 text-base normal-case tracking-normal outline-none focus:border-champagne" {...props}/></label>}
+﻿interface Props {
+  label: string
+  type?: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  error?: string
+}
+
+export function Input({ label, type = 'text', value, onChange, error }: Props) {
+  return (
+    <div className="relative">
+      <input type={type} value={value} onChange={onChange} placeholder=" "
+        className="peer w-full bg-transparent border-b border-luxury-gray text-luxury-white pt-5 pb-2 text-sm tracking-wide outline-none focus:border-luxury-gold transition-colors"/>
+      <label className="absolute left-0 top-0 text-luxury-muted text-xs tracking-luxury uppercase transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs peer-focus:text-luxury-gold">
+        {label}
+      </label>
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+    </div>
+  )
+}

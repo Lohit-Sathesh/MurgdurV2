@@ -2,6 +2,12 @@
 
 export type CartItem = {
   productId: string;
+  variantId: string;
+  name: string;
+  price: number;
+  image: string;
+  color?: string;
+  size?: string;
   quantity: number;
   product?: Product;
 };

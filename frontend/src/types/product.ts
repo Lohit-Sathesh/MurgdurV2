@@ -1,17 +1,32 @@
-﻿export type Product = {
-  id: string;
-  slug: string;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  media: string[];
-};
+﻿export interface ProductImage {
+  id: string
+  url: string
+  altText: string | null
+  sortOrder: number
+  isVideo: boolean
+}
 
-export type ProductQuery = {
-  category?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-  sort?: 'newest' | 'price-asc' | 'price-desc';
-};
+export interface ProductVariant {
+  id: string
+  sku: string
+  color: string | null
+  colorHex: string | null
+  size: string | null
+  stock: number
+  price: string | null
+}
+
+export interface Product {
+  id: string
+  name: string
+  slug: string
+  sku: string
+  description: string
+  price: string
+  comparePrice: string | null
+  currency: string
+  material: string | null
+  images: ProductImage[]
+  variants: ProductVariant[]
+  category: { id: string; name: string; slug: string }
+}

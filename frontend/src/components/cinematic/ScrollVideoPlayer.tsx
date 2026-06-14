@@ -1,6 +1,52 @@
-﻿'use client';
-import { useEffect,useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-gsap.registerPlugin(ScrollTrigger);
-export function ScrollVideoPlayer(){const ref=useRef<HTMLDivElement>(null);useEffect(()=>{if(!ref.current)return;const ctx=gsap.context(()=>{gsap.to('[data-cinematic-panel]',{scale:.94,opacity:.86,scrollTrigger:{trigger:ref.current,start:'top bottom',end:'bottom top',scrub:true}})},ref);return()=>ctx.revert()},[]);return <section ref={ref} className="px-6 pb-section md:px-12"><div data-cinematic-panel className="mx-auto aspect-video max-w-6xl bg-ink p-8 text-ivory"><p className="text-sm uppercase tracking-[0.24em] text-champagne">Scroll film</p><h2 className="mt-5 max-w-xl font-serif text-5xl">Motion-led product storytelling.</h2></div></section>}
+﻿'use client'
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+export function ScrollVideoPlayer({ videoUrl }: { videoUrl?: string }) {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const videoRef   = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video   = videoRef.current
+    const section = sectionRef.current
+    if (!video || !section) return
+
+    video.pause()
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      onUpdate: (self) => {
+        if (video.duration) {
+          video.currentTime = video.duration * self.progress
+        }
+      },
+    })
+
+    return () => ScrollTrigger.getAll().forEach(t => t.kill())
+  }, [videoUrl])
+
+  if (!videoUrl) return null
+
+  return (
+    <div ref={sectionRef} className="relative h-[300vh]">
+      <div className="sticky top-0 h-screen overflow-hidden">
+        <video ref={videoRef} muted playsInline preload="auto"
+          className="w-full h-full object-cover"
+          src={videoUrl}
+        />
+        <div className="absolute inset-0 bg-luxury-black/30" />
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
+          <p className="text-luxury-white/60 text-xs tracking-luxury uppercase animate-bounce">
+            Scroll to explore
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}

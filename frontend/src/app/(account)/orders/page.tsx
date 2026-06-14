@@ -1,2 +1,26 @@
-﻿const orders=['MRG-1024','MRG-1025'];
-export default function OrdersPage(){return <section className="mx-auto min-h-screen max-w-5xl px-6 py-section"><h1 className="font-serif text-5xl">Orders</h1><div className="mt-10 divide-y divide-mist border-y border-mist">{orders.map((o)=><a key={o} href={`/orders/${o}`} className="flex items-center justify-between py-5"><span>{o}</span><span className="text-sm uppercase tracking-[0.22em] text-champagne">View</span></a>)}</div></section>}
+﻿import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { OrderCard } from '@/components/account/OrderCard'
+import { api } from '@/lib/api'
+import type { Order } from '@/types/order'
+
+export default async function OrdersPage() {
+  const session = await getServerSession(authOptions)
+  let orders: Order[] = []
+  try {
+    const res = await api.get('/orders', {
+      headers: { Authorization: `Bearer ${(session as any)?.accessToken}` }
+    })
+    orders = res.data
+  } catch {}
+
+  return (
+    <div>
+      <h1 className="font-serif text-3xl tracking-luxury mb-12">Order History</h1>
+      {orders.length === 0
+        ? <p className="text-luxury-muted tracking-wide">No orders yet.</p>
+        : <div className="space-y-4">{orders.map(o => <OrderCard key={o.id} order={o} />)}</div>
+      }
+    </div>
+  )
+}

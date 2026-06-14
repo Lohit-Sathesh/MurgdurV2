@@ -1,4 +1,10 @@
-﻿apiVersion: argoproj.io/v1alpha1
+# Replace `repoURL` with your actual git remote (e.g. the GitHub repo this
+# project lives in), then on a cluster with ArgoCD installed:
+#   kubectl apply -f infrastructure/argocd/application.yaml
+# ArgoCD will then continuously sync infrastructure/k8s/ into the `murgdur`
+# namespace, including running the backend-migrate PreSync hook before each
+# rollout.
+apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: murgdur
@@ -6,7 +12,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/example/murgdur.git
+    repoURL: https://github.com/Lohit-Sathesh/MurgdurV2.git
     targetRevision: main
     path: infrastructure/k8s
   destination:
@@ -16,3 +22,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

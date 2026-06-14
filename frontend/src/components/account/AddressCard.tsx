@@ -1,14 +1,38 @@
-﻿import type { Address } from '@/types/user';
-import { Badge } from '@/components/ui/Badge';
+﻿'use client'
+import type { Address } from '@/types/user'
 
-export function AddressCard({ address, primary = false }: { address: Address; primary?: boolean }) {
+export function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit?: () => void; onDelete?: () => void }) {
   return (
-    <article className="border border-mist p-5">
-      <div className="flex items-center justify-between gap-4">
-        <strong>{address.city}</strong>
-        {primary ? <Badge>Primary</Badge> : null}
+    <div className="border border-luxury-gray p-6 space-y-2">
+      {address.isDefault && (
+        <span className="text-luxury-gold text-xs tracking-luxury uppercase">Default</span>
+      )}
+      {address.label && (
+        <p className="text-luxury-white text-sm tracking-wide">{address.label}</p>
+      )}
+      <p className="text-luxury-muted text-sm">
+        {address.firstName} {address.lastName}
+      </p>
+      <p className="text-luxury-muted text-sm">{address.line1}</p>
+      {address.line2 && <p className="text-luxury-muted text-sm">{address.line2}</p>}
+      <p className="text-luxury-muted text-sm">
+        {address.city}, {address.state} {address.postalCode}
+      </p>
+      {address.phone && <p className="text-luxury-muted text-sm">{address.phone}</p>}
+      <div className="flex gap-4 mt-2">
+        {onEdit && (
+          <button onClick={onEdit}
+            className="text-luxury-gold text-xs tracking-luxury uppercase hover:text-luxury-white transition-colors">
+            Edit
+          </button>
+        )}
+        {onDelete && (
+          <button onClick={onDelete}
+            className="text-luxury-muted text-xs tracking-luxury uppercase hover:text-red-400 transition-colors">
+            Delete
+          </button>
+        )}
       </div>
-      <p className="mt-4 leading-7 text-graphite">{address.line1}{address.line2 ? `, ${address.line2}` : ''}<br />{address.city}, {address.postal}<br />{address.country}</p>
-    </article>
-  );
+    </div>
+  )
 }

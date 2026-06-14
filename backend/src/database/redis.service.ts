@@ -1,31 +1,22 @@
-﻿import { Injectable, OnModuleDestroy } from '@nestjs/common';
-
-type RedisValue = string | number | Buffer;
+﻿import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common'
+import Redis from 'ioredis'
 
 @Injectable()
-export class RedisService implements OnModuleDestroy {
-  private readonly memory = new Map<string, { value: RedisValue; expiresAt?: number }>();
+export class RedisService implements OnModuleInit, OnModuleDestroy {
+  private client!: Redis
 
-  async get(key: string) {
-    const item = this.memory.get(key);
-    if (!item) return null;
-    if (item.expiresAt && item.expiresAt < Date.now()) {
-      this.memory.delete(key);
-      return null;
-    }
-    return String(item.value);
+  onModuleInit() {
+    this.client = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379')
+    this.client.on('error', (err) => console.error('Redis error:', err))
   }
 
-  async set(key: string, value: RedisValue, ttlSeconds?: number) {
-    this.memory.set(key, { value, expiresAt: ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined });
-    return 'OK';
-  }
+  async onModuleDestroy() { await this.client.quit() }
 
-  async del(key: string) {
-    return this.memory.delete(key) ? 1 : 0;
+  async get(key: string) { return this.client.get(key) }
+  async set(key: string, value: string, ttlSeconds?: number) {
+    if (ttlSeconds) return this.client.setex(key, ttlSeconds, value)
+    return this.client.set(key, value)
   }
-
-  async onModuleDestroy() {
-    this.memory.clear();
-  }
+  async del(key: string) { return this.client.del(key) }
+  async exists(key: string) { return this.client.exists(key) }
 }

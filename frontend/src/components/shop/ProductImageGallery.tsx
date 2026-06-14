@@ -1,21 +1,63 @@
-﻿'use client';
+'use client'
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
+import type { ProductImage } from '@/types/product'
 
-import { useState } from 'react';
+const AUTO_SLIDE_INTERVAL = 4000
 
-export function ProductImageGallery({ images, name }: { images: string[]; name: string }) {
-  const [active, setActive] = useState(images[0]);
+export function ProductImageGallery({ images }: { images: ProductImage[] }) {
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    if (paused || images?.length <= 1) return
+    intervalRef.current = setInterval(() => {
+      setActive(prev => (prev + 1) % images.length)
+    }, AUTO_SLIDE_INTERVAL)
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [paused, images?.length])
+
+  if (!images?.length) return <div className="aspect-[3/4] bg-luxury-gray" />
+
   return (
-    <div className="grid gap-4">
-      <div className="aspect-[4/5] bg-mist">
-        {active ? <img src={active} alt={name} className="h-full w-full object-cover" /> : null}
-      </div>
-      <div className="grid grid-cols-4 gap-3">
-        {images.map((image) => (
-          <button key={image} onClick={() => setActive(image)} className="aspect-square border border-mist">
-            <img src={image} alt="" className="h-full w-full object-cover" />
-          </button>
+    <div className="flex gap-4">
+      {images.length > 1 && (
+        <div className="flex flex-col gap-3 w-16">
+          {images.slice(0, 6).map((img, i) => (
+            <button key={img.id} onClick={() => setActive(i)}
+              className={`relative aspect-square border transition-all ${
+                i === active ? 'border-luxury-gold' : 'border-luxury-gray hover:border-luxury-white'
+              }`}>
+              <Image src={img.url} alt={img.altText ?? ''} fill className="object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="relative flex-1 aspect-[3/4] overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}>
+        {images.map((img, i) => (
+          <Image key={img.id} src={img.url} alt={img.altText ?? ''}
+            fill
+            className={`object-cover transition-opacity duration-1000 ease-in-out ${
+              i === active ? 'opacity-100' : 'opacity-0'
+            }`}
+            priority={i === 0} />
         ))}
+        {images.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            {images.map((_, i) => (
+              <button key={i} onClick={() => setActive(i)}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  i === active ? 'bg-luxury-gold' : 'bg-luxury-white/40'
+                }`} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
-  );
+  )
 }

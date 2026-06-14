@@ -1,3 +1,24 @@
-﻿import type { ButtonHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-export function Button({className,...props}:ButtonHTMLAttributes<HTMLButtonElement>){return <button className={cn('inline-flex min-h-11 items-center justify-center bg-ink px-6 text-sm uppercase tracking-[0.2em] text-ivory transition hover:bg-graphite',className)} {...props}/>}
+﻿import { LoadingSpinner } from './LoadingSpinner'
+
+interface Props {
+  children: React.ReactNode
+  onClick?: () => void
+  loading?: boolean
+  fullWidth?: boolean
+  variant?: 'primary' | 'outline'
+  disabled?: boolean
+}
+
+export function Button({ children, onClick, loading, fullWidth, variant = 'primary', disabled }: Props) {
+  const base = 'tracking-luxury text-sm uppercase transition-all duration-300 px-8 py-3 flex items-center justify-center gap-2'
+  const variants = {
+    primary: 'bg-luxury-gold text-luxury-black hover:bg-luxury-white',
+    outline: 'border border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-luxury-black',
+  }
+  return (
+    <button onClick={onClick} disabled={disabled || loading}
+      className={`${base} ${variants[variant]} ${fullWidth ? 'w-full' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}>
+      {loading ? <LoadingSpinner size="sm" /> : children}
+    </button>
+  )
+}

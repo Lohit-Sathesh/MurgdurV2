@@ -1,25 +1,15 @@
-﻿import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsString, Min, ValidateNested } from 'class-validator';
+﻿import { IsUUID, IsArray, ValidateNested, IsInt, Min, IsOptional, IsIn } from 'class-validator'
+import { Type } from 'class-transformer'
 
-class CreateOrderItemDto {
-  @IsString()
-  productId!: string;
-
-  @IsInt()
-  @Min(1)
-  quantity!: number;
-
-  @IsInt()
-  @Min(0)
-  price!: number;
+class OrderItemDto {
+  @IsUUID() productId!: string
+  @IsOptional() @IsUUID() variantId?: string
+  @IsInt() @Min(1) quantity!: number
 }
 
 export class CreateOrderDto {
-  @IsString()
-  userId!: string;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateOrderItemDto)
-  items!: CreateOrderItemDto[];
+  @IsUUID() addressId!: string
+  @IsArray() @ValidateNested({ each: true }) @Type(() => OrderItemDto)
+  items!: OrderItemDto[]
+  @IsIn(['RAZORPAY', 'COD']) paymentMethod!: string
 }

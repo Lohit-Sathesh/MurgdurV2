@@ -1,1 +1,22 @@
-﻿export default function WishlistPage(){return <section className="mx-auto min-h-screen max-w-6xl px-6 py-section"><h1 className="font-serif text-5xl">Wishlist</h1><div className="mt-10 grid gap-5 md:grid-cols-3">{['Folded Tote','Evening Case','Travel Wrap'].map((i)=><article key={i} className="border border-mist p-6"><h2 className="font-serif text-2xl">{i}</h2><p className="mt-3 text-sm text-graphite">Saved for your next private edit.</p></article>)}</div></section>}
+﻿import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { WishlistGrid } from '@/components/account/WishlistGrid'
+import { api } from '@/lib/api'
+
+export default async function WishlistPage() {
+  const session = await getServerSession(authOptions)
+  let items = []
+  try {
+    const res = await api.get('/wishlist', {
+      headers: { Authorization: `Bearer ${(session as any)?.accessToken}` }
+    })
+    items = res.data
+  } catch {}
+
+  return (
+    <div>
+      <h1 className="font-serif text-3xl tracking-luxury mb-12">Wishlist</h1>
+      <WishlistGrid items={items} />
+    </div>
+  )
+}

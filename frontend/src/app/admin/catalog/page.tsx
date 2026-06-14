@@ -1,1 +1,109 @@
-﻿export default function CatalogAdminPage(){return <section className="px-6 py-section"><h1 className="font-serif text-5xl">Catalog management</h1><div className="mt-10 border-y border-mist py-8">Products, inventory, and collection states.</div></section>}
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { api } from '@/lib/api'
+import { ProductRow } from '@/components/admin/ProductRow'
+import { CreateProductForm } from '@/components/admin/CreateProductForm'
+import { CreateCategoryForm } from '@/components/admin/CreateCategoryForm'
+import { CategoryList } from '@/components/admin/CategoryList'
+
+interface AdminProduct {
+  id: string
+  name: string
+  sku: string
+  price: string
+  comparePrice: string | null
+  isActive: boolean
+  variants: Array<{ id: string; sku: string; color: string | null; size: string | null; stock: number }>
+}
+
+interface CategoryNode {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  imageUrl?: string | null
+  children?: CategoryNode[]
+}
+
+interface FlatCategory {
+  id: string
+  label: string
+  hasChildren: boolean
+  slug: string
+  description: string | null
+  imageUrl: string | null
+}
+
+function flattenCategories(tree: CategoryNode[]): FlatCategory[] {
+  const result: FlatCategory[] = []
+  for (const node of tree) {
+    const hasChildren = !!node.children?.length
+    result.push({ id: node.id, label: node.name, hasChildren, slug: node.slug, description: node.description ?? null, imageUrl: node.imageUrl ?? null })
+    for (const child of node.children ?? []) {
+      const grandChildren = (child as CategoryNode).children ?? []
+      result.push({ id: child.id, label: `${node.name} > ${child.name}`, hasChildren: grandChildren.length > 0, slug: child.slug, description: child.description ?? null, imageUrl: child.imageUrl ?? null })
+      for (const grandChild of grandChildren) {
+        result.push({ id: grandChild.id, label: `${node.name} > ${child.name} > ${grandChild.name}`, hasChildren: false, slug: grandChild.slug, description: grandChild.description ?? null, imageUrl: grandChild.imageUrl ?? null })
+      }
+    }
+  }
+  return result
+}
+
+export default async function CatalogAdminPage() {
+  const session = await getServerSession(authOptions)
+  const headers = { Authorization: `Bearer ${(session as any)?.accessToken}` }
+
+  let products: AdminProduct[] = []
+  let categoryTree: CategoryNode[] = []
+  try {
+    const res = await api.get('/admin/products', { headers })
+    products = res.data ?? []
+  } catch {}
+  try {
+    const res = await api.get('/products/categories')
+    categoryTree = res.data ?? []
+  } catch {}
+
+  const flatCategories = flattenCategories(categoryTree)
+  // Only leaf categories (no children) make sense as a product's category
+  const productCategoryOptions = flatCategories.filter(c => !c.hasChildren)
+
+  return (
+    <section>
+      <h1 className="font-serif text-4xl tracking-luxury mb-10">Catalog Management</h1>
+
+      <div className="mb-8 flex flex-wrap gap-4">
+        <CreateProductForm categories={productCategoryOptions} />
+        <CreateCategoryForm categories={flatCategories} />
+      </div>
+
+      <div className="mb-8">
+        <CategoryList categories={flatCategories} />
+      </div>
+
+      {products.length === 0 ? (
+        <p className="text-luxury-muted border border-luxury-gray p-8 text-center">No products yet.</p>
+      ) : (
+        <div className="overflow-x-auto border border-luxury-gray">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-luxury-muted uppercase text-xs tracking-luxury border-b border-luxury-gray bg-luxury-white/[0.02]">
+                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4">SKU</th>
+                <th className="py-3 px-4">Price</th>
+                <th className="py-3 px-4">Compare At</th>
+                <th className="py-3 px-4">Active</th>
+                <th className="py-3 px-4">Variants</th>
+                <th className="py-3 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(p => <ProductRow key={p.id} product={p} />)}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  )
+}

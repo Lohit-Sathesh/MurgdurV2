@@ -1,29 +1,15 @@
-﻿import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+﻿import { IsOptional, IsString, IsBoolean, IsInt, IsNumber, Min, IsIn } from 'class-validator'
+import { Transform, Type } from 'class-transformer'
 
 export class ProductQueryDto {
-  @IsOptional()
-  @IsString()
-  category?: string;
-
-  @IsOptional()
-  @IsString()
-  search?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit?: number = 24;
-
-  @IsOptional()
-  @IsString()
-  sort?: 'newest' | 'price-asc' | 'price-desc';
+  @IsOptional() @IsString() category?: string
+  @IsOptional() @Transform(({ value }) => value === 'true') @IsBoolean() featured?: boolean
+  @IsOptional() @Transform(({ value }) => value === 'true') @IsBoolean() newArrivals?: boolean
+  @IsOptional() @IsString() color?: string
+  @IsOptional() @IsString() size?: string
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) minPrice?: number
+  @IsOptional() @Type(() => Number) @IsNumber() @Min(0) maxPrice?: number
+  @IsOptional() @IsIn(['price_asc', 'price_desc', 'newest']) sort?: string
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) limit?: number
+  @IsOptional() @Type(() => Number) @IsInt() @Min(0) offset?: number
 }

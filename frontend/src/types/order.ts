@@ -1,16 +1,24 @@
-﻿import type { Product } from './product';
+﻿export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED'
+export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
 
-export type OrderItem = {
-  id: string;
-  product: Product;
-  quantity: number;
-  price: number;
-};
+export interface OrderItem {
+  id: string
+  quantity: number
+  unitPrice: string
+  totalPrice: string
+  snapshot: { name: string; image: string }
+}
 
-export type Order = {
-  id: string;
-  status: string;
-  paymentStatus: string;
-  items: OrderItem[];
-  createdAt: string;
-};
+export interface Order {
+  id: string
+  orderNumber: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  subtotal: string
+  tax: string
+  shippingFee: string
+  total: string
+  currency: string
+  createdAt: string
+  items: OrderItem[]
+}

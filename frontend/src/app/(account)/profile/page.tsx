@@ -1,1 +1,16 @@
-﻿export default function ProfilePage(){return <section className="mx-auto min-h-screen max-w-4xl px-6 py-section"><p className="text-sm uppercase tracking-[0.24em] text-champagne">Customer ID MRG-000001</p><h1 className="mt-4 font-serif text-5xl">Account details</h1><div className="mt-10 grid gap-6 border-y border-mist py-8 md:grid-cols-2"><span>Name</span><strong>Private Client</strong><span>Email</span><strong>client@example.com</strong></div></section>}
+﻿import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { ProfileForm } from '@/components/account/ProfileForm'
+
+export default async function ProfilePage() {
+  const session = await getServerSession(authOptions)
+  return (
+    <div>
+      <h1 className="font-serif text-3xl tracking-luxury mb-2">Profile</h1>
+      <p className="text-luxury-muted text-sm tracking-luxury mb-12">
+        Customer ID: {(session?.user as any)?.customerId}
+      </p>
+      <ProfileForm user={session?.user} />
+    </div>
+  )
+}

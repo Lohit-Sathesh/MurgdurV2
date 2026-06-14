@@ -1,0 +1,425 @@
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminOnly } from '../common/decorators/admin.decorator';
+import { PrismaService } from '../database/prisma.service';
+import { RedisService } from '../database/redis.service';
+import { SearchService } from '../search/search.service';
+
+@Controller('admin')
+@UseGuards(JwtAuthGuard, AdminGuard)
+export class AdminController {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+    private readonly search: SearchService,
+  ) {}
+
+  /**
+   * Get all orders (admin or support)
+   */
+  @Get('orders')
+  async getAllOrders() {
+    return this.prisma.order.findMany({
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Get order details (admin or support)
+   */
+  @Get('orders/:orderId')
+  async getOrderDetails(@Param('orderId') orderId: string) {
+    return this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Update order status (admin or support)
+   */
+  @Patch('orders/:orderId/status')
+  async updateOrderStatus(
+    @Param('orderId') orderId: string,
+    @Body() body: { status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED' },
+  ) {
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: { status: body.status },
+    });
+  }
+
+  /**
+   * Get all categories, flat list with parent info (admin only)
+   */
+  @Get('categories')
+  @AdminOnly()
+  async getAllCategories() {
+    return this.prisma.category.findMany({
+      include: { parent: true },
+      orderBy: [{ parentId: 'asc' }, { sortOrder: 'asc' }],
+    });
+  }
+
+  /**
+   * Create a category or subcategory (admin only)
+   */
+  @Post('categories')
+  @AdminOnly()
+  async createCategory(@Body() body: { name: string; slug: string; parentId?: string }) {
+    const category = await this.prisma.category.create({
+      data: {
+        name: body.name,
+        slug: body.slug,
+        parentId: body.parentId || null,
+      },
+    });
+    await this.redis.del('categories:tree');
+    return category;
+  }
+
+  /**
+   * Update a category's display details (admin only)
+   */
+  @Patch('categories/:id')
+  @AdminOnly()
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() body: { name?: string; description?: string; imageUrl?: string },
+  ) {
+    const category = await this.prisma.category.update({
+      where: { id },
+      data: body,
+    });
+    await this.redis.del('categories:tree');
+    return category;
+  }
+
+  /**
+   * Remove a category (admin only)
+   */
+  @Delete('categories/:id')
+  @AdminOnly()
+  async deleteCategory(@Param('id') id: string) {
+    const [productCount, childCount] = await Promise.all([
+      this.prisma.product.count({ where: { categoryId: id } }),
+      this.prisma.category.count({ where: { parentId: id } }),
+    ]);
+
+    if (productCount > 0 || childCount > 0) {
+      throw new BadRequestException(
+        'This category has products or subcategories and cannot be deleted. Move or remove them first.',
+      );
+    }
+
+    await this.prisma.category.delete({ where: { id } });
+    await this.redis.del('categories:tree');
+    return { id };
+  }
+
+  /**
+   * Get all products (admin only)
+   */
+  @Get('products')
+  @AdminOnly()
+  async getAllProducts() {
+    return this.prisma.product.findMany({
+      include: { variants: true, category: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Update product fields (admin only)
+   */
+  @Patch('products/:id')
+  @AdminOnly()
+  async updateProduct(
+    @Param('id') id: string,
+    @Body() body: { price?: number; comparePrice?: number | null; isActive?: boolean; isFeatured?: boolean },
+  ) {
+    return this.prisma.product.update({
+      where: { id },
+      data: body,
+    });
+  }
+
+  /**
+   * Remove a product from the catalog (admin only)
+   */
+  @Delete('products/:id')
+  @AdminOnly()
+  async deleteProduct(@Param('id') id: string) {
+    const [orderItemCount, reviewCount] = await Promise.all([
+      this.prisma.orderItem.count({ where: { productId: id } }),
+      this.prisma.review.count({ where: { productId: id } }),
+    ]);
+
+    if (orderItemCount > 0 || reviewCount > 0) {
+      throw new BadRequestException(
+        'This product has order or review history and cannot be deleted. Deactivate it instead.',
+      );
+    }
+
+    await this.prisma.product.delete({ where: { id } });
+    return { id };
+  }
+
+  /**
+   * Update product variant stock/price (admin only)
+   */
+  @Patch('products/variants/:id')
+  @AdminOnly()
+  async updateVariant(
+    @Param('id') id: string,
+    @Body() body: { stock?: number; price?: number; isActive?: boolean },
+  ) {
+    return this.prisma.productVariant.update({
+      where: { id },
+      data: body,
+    });
+  }
+
+  /**
+   * Get all users (admin only)
+   */
+  @Get('users')
+  @AdminOnly()
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Update user role (admin only)
+   */
+  @Patch('users/:userId/role')
+  @AdminOnly()
+  async updateUserRole(
+    @Param('userId') userId: string,
+    @Body() body: { role: 'CUSTOMER' | 'ADMIN' | 'SUPPORT' },
+  ) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { role: body.role },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+      },
+    });
+  }
+
+  /**
+   * Get dashboard analytics (admin only)
+   */
+  @Get('analytics/dashboard')
+  @AdminOnly()
+  async getDashboardAnalytics() {
+    const totalOrders = await this.prisma.order.count();
+    const totalRevenue = await this.prisma.order.aggregate({
+      _sum: {
+        total: true,
+      },
+      where: {
+        status: 'CONFIRMED',
+      },
+    });
+    const totalUsers = await this.prisma.user.count();
+    const totalProducts = await this.prisma.product.count();
+
+    const recentOrders = await this.prisma.order.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return {
+      totalOrders,
+      totalRevenue: totalRevenue._sum.total || 0,
+      totalUsers,
+      totalProducts,
+      recentOrders,
+    };
+  }
+
+  /**
+   * Get sales by date range (admin only)
+   */
+  @Post('analytics/sales')
+  @AdminOnly()
+  async getSalesByDateRange(@Body() body: { startDate: Date; endDate: Date }) {
+    return this.prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: new Date(body.startDate),
+          lte: new Date(body.endDate),
+        },
+      },
+      include: {
+        items: true,
+      },
+    });
+  }
+
+  /**
+   * Get top selling products (admin only)
+   */
+  @Get('analytics/top-products')
+  @AdminOnly()
+  async getTopSellingProducts() {
+    const products = await this.prisma.product.findMany({
+      include: {
+        orderItems: {
+          select: {
+            quantity: true,
+          },
+        },
+      },
+    });
+
+    return products
+      .map((product: any) => ({
+        ...product,
+        totalSold: product.orderItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
+      }))
+      .sort((a: any, b: any) => b.totalSold - a.totalSold)
+      .slice(0, 10);
+  }
+
+  /**
+   * Get inventory status (admin only)
+   */
+  @Get('inventory')
+  @AdminOnly()
+  async getInventoryStatus() {
+    return this.prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+      },
+    });
+  }
+
+  /**
+   * Rebuild the search index from the database (admin only)
+   */
+  @Post('search/reindex')
+  @AdminOnly()
+  async reindexSearch() {
+    const products = await this.prisma.product.findMany({
+      where: { isActive: true },
+      include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } },
+    });
+    await this.search.reindexAll(products);
+    return { reindexed: products.length };
+  }
+
+  /**
+   * Get all homepage slides (admin only)
+   */
+  @Get('homepage-slides')
+  @AdminOnly()
+  async getHomepageSlides() {
+    return this.prisma.homepageSlide.findMany({
+      orderBy: { sortOrder: 'asc' },
+    });
+  }
+
+  /**
+   * Create a homepage slide (admin only)
+   */
+  @Post('homepage-slides')
+  @AdminOnly()
+  async createHomepageSlide(@Body() body: {
+    mediaUrl: string; mediaType?: string; placement?: string; headline: string; subheading?: string; linkUrl?: string; sortOrder?: number;
+  }) {
+    return this.prisma.homepageSlide.create({
+      data: {
+        mediaUrl: body.mediaUrl,
+        mediaType: body.mediaType ?? 'image',
+        placement: body.placement ?? 'hero',
+        headline: body.headline,
+        subheading: body.subheading,
+        linkUrl: body.linkUrl,
+        sortOrder: body.sortOrder ?? 0,
+      },
+    });
+  }
+
+  /**
+   * Update a homepage slide (admin only)
+   */
+  @Patch('homepage-slides/:id')
+  @AdminOnly()
+  async updateHomepageSlide(@Param('id') id: string, @Body() body: {
+    mediaUrl?: string; mediaType?: string; placement?: string; headline?: string; subheading?: string; linkUrl?: string; sortOrder?: number; isActive?: boolean;
+  }) {
+    return this.prisma.homepageSlide.update({
+      where: { id },
+      data: body,
+    });
+  }
+
+  /**
+   * Remove a homepage slide (admin only)
+   */
+  @Delete('homepage-slides/:id')
+  @AdminOnly()
+  async deleteHomepageSlide(@Param('id') id: string) {
+    await this.prisma.homepageSlide.delete({ where: { id } });
+    return { id };
+  }
+}

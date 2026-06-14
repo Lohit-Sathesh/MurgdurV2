@@ -1,28 +1,11 @@
-﻿import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
+﻿import { IsString, IsNumber, IsOptional, IsBoolean, Min } from 'class-validator'
 
 export class UpdateProductDto {
-  @IsOptional()
-  @IsString()
-  slug?: string;
-
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  category?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  price?: number;
-
-  @IsOptional()
-  @IsArray()
-  media?: string[];
+  @IsOptional() @IsString() name?: string
+  @IsOptional() @IsString() description?: string
+  @IsOptional() @IsNumber() @Min(0) price?: number
+  @IsOptional() @IsBoolean() isActive?: boolean
+  @IsOptional() @IsBoolean() isFeatured?: boolean
+  @IsOptional() @IsString() material?: string
+  @IsOptional() @IsNumber() @Min(0) comparePrice?: number
 }

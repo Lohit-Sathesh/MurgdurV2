@@ -1,1 +1,23 @@
-﻿export default function AddressesPage(){return <section className="mx-auto min-h-screen max-w-4xl px-6 py-section"><h1 className="font-serif text-5xl">Address book</h1><div className="mt-10 border border-mist p-6"><p className="text-sm uppercase tracking-[0.22em] text-champagne">Primary</p><p className="mt-4 leading-7">Add your preferred delivery address.</p></div></section>}
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { AddressBook } from '@/components/account/AddressBook'
+import { api } from '@/lib/api'
+import type { Address } from '@/types/user'
+
+export default async function AddressesPage() {
+  const session = await getServerSession(authOptions)
+  let addresses: Address[] = []
+  try {
+    const res = await api.get('/users/me', {
+      headers: { Authorization: `Bearer ${(session as any)?.accessToken}` }
+    })
+    addresses = res.data?.addresses ?? []
+  } catch {}
+
+  return (
+    <div>
+      <h1 className="font-serif text-3xl tracking-luxury mb-12">Address Book</h1>
+      <AddressBook initialAddresses={addresses} />
+    </div>
+  )
+}

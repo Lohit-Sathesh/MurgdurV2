@@ -1,6 +1,30 @@
-﻿/** @type {import('next').NextConfig} */
+﻿/** @type {import('next').Config} */
 const nextConfig = {
-  images: { remotePatterns: [{ protocol: 'https', hostname: process.env.R2_PUBLIC_DOMAIN?.replace(/^https?:\/\//, '') || 'assets.example.com', pathname: '/**' }] },
-  experimental: { serverActions: true },
-};
-module.exports = nextConfig;
+  output: 'standalone',
+  async rewrites() {
+    return [
+      {
+        source: '/backend-api/:path*',
+        destination: `${process.env.INTERNAL_API_URL ?? 'http://localhost:3001'}/:path*`,
+      },
+    ]
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'media.murgdur.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
+  },
+}
+
+module.exports = nextConfig

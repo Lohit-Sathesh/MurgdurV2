@@ -1,20 +1,42 @@
-﻿'use client';
-
-import { useCallback, useEffect, useState } from 'react';
-import type { Product } from '@/types/product';
+﻿'use client'
+import { useState, useEffect } from 'react'
+import { api } from '@/lib/api'
+import { useAuth } from './useAuth'
 
 export function useWishlist() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { isLoggedIn } = useAuth()
+  const [wishlist, setWishlist] = useState<string[]>([])
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`).then((res) => res.ok ? res.json() : []).then((data) => {
-      setProducts(Array.isArray(data) ? data.map((item) => item.product ?? item) : []);
-    });
-  }, []);
+    if (!isLoggedIn) return
+    api.get('/wishlist').then(r => {
+      setWishlist(r.data?.map((i: any) => i.productId) ?? [])
+    }).catch(() => {})
+  }, [isLoggedIn])
 
-  const add = useCallback(async (productId: string) => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId }) });
-  }, []);
+  async function toggle(productId: string) {
+    if (!isLoggedIn) return
+    const inList = wishlist.includes(productId)
+    if (inList) {
+      await api.delete(`/wishlist/${productId}`)
+      setWishlist(prev => prev.filter(id => id !== productId))
+      return false
+    } else {
+      try {
+        await api.post('/wishlist', { productId })
+        setWishlist(prev => [...prev, productId])
+        return true
+      } catch (err: any) {
+        if (err?.response?.status === 409) {
+          // Already in wishlist (stale local state) — user intent was to remove it
+          await api.delete(`/wishlist/${productId}`)
+          setWishlist(prev => prev.filter(id => id !== productId))
+          return false
+        }
+        throw err
+      }
+    }
+  }
 
-  return { products, add };
+  return { wishlist, toggle, isInWishlist: (id: string) => wishlist.includes(id) }
 }

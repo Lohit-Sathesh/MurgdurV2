@@ -1,28 +1,29 @@
-﻿'use client';
+﻿import { useState, useEffect } from 'react'
+import { api } from '@/lib/api'
+import type { Product } from '@/types/product'
 
-import { useEffect, useMemo, useState } from 'react';
-import type { Product, ProductQuery } from '@/types/product';
+interface Filters {
+  category?: string
+  sort?: string
+  color?: string
+  size?: string
+  limit?: number
+}
 
-export function useProducts(query: ProductQuery = {}) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const queryKey = JSON.stringify(query);
-  const search = useMemo(() => {
-    const parsed = JSON.parse(queryKey) as ProductQuery;
-    return new URLSearchParams(
-      Object.entries(parsed)
-        .filter(([, value]) => value !== undefined)
-        .map(([key, value]) => [key, String(value)]),
-    );
-  }, [queryKey]);
+export function useProducts(filters: Filters = {}) {
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?${search.toString()}`)
-      .then((res) => res.ok ? res.json() : [])
-      .then((data) => setProducts(Array.isArray(data) ? data : data.data ?? []))
-      .finally(() => setLoading(false));
-  }, [search]);
+    setLoading(true)
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => v && params.set(k, String(v)))
+    api.get(`/products?${params}`)
+      .then(r => setProducts(r.data.data?.products ?? []))
+      .catch(() => setError('Failed to load products'))
+      .finally(() => setLoading(false))
+  }, [JSON.stringify(filters)])
 
-  return { products, loading };
+  return { products, loading, error }
 }

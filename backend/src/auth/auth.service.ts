@@ -1,4 +1,130 @@
-﻿import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+﻿import { Injectable, Logger, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { PrismaService } from '../database/prisma.service'
+import { RegisterDto } from './dto/register.dto'
+import { LoginDto } from './dto/login.dto'
+import { EmailService } from '../email/email.service'
+import { VerificationService } from '../verification/verification.service'
+import { SmsService } from '../verification/sms.service'
+import * as bcrypt from 'bcrypt'
+
 @Injectable()
-export class AuthService{constructor(private readonly jwtService:JwtService){} validateCredentials(email:string,password:string){if(!email||!password)return {ok:false};const payload={sub:email,email,role:email.endsWith('@murgdur.example')?'admin':'client'};return {ok:true,accessToken:this.jwtService.sign(payload)}} rotateToken(payload:Record<string,unknown>){return this.jwtService.sign(payload)}}
+export class AuthService {
+  private readonly logger = new Logger(AuthService.name)
+
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private email: EmailService,
+    private sms: SmsService,
+    private verification: VerificationService,
+  ) {}
+
+  async sendEmailOtp(email: string) {
+    const code = await this.verification.createOtp(email, 'email')
+    try {
+      await this.email.sendEmail(
+        email,
+        'Your Murgdur verification code',
+        `<p>Your verification code is <strong>${code}</strong>. It expires in 10 minutes.</p>`,
+      )
+    } catch {
+      this.logger.warn(`Email delivery failed — verification code for ${email}: ${code}`)
+    }
+    return { sent: true }
+  }
+
+  async verifyEmailOtp(email: string, code: string) {
+    const ok = await this.verification.verifyOtp(email, 'email', code)
+    if (!ok) throw new BadRequestException('Invalid or expired verification code')
+    return { verified: true }
+  }
+
+  async sendPhoneOtp(phone: string) {
+    const code = await this.verification.createOtp(phone, 'phone')
+    await this.sms.sendSms(phone, `Your Murgdur verification code is ${code}. It expires in 10 minutes.`)
+    return { sent: true }
+  }
+
+  async verifyPhoneOtp(phone: string, code: string) {
+    const ok = await this.verification.verifyOtp(phone, 'phone', code)
+    if (!ok) throw new BadRequestException('Invalid or expired verification code')
+    return { verified: true }
+  }
+
+  async register(dto: RegisterDto) {
+    const exists = await this.prisma.user.findUnique({ where: { email: dto.email } })
+    if (exists) throw new ConflictException('Email already registered')
+
+    const emailVerified = await this.verification.isVerified(dto.email, 'email')
+    if (!emailVerified) throw new BadRequestException('Please verify your email with the code sent to it before creating an account')
+
+    let phoneVerified = false
+    if (dto.phone) {
+      phoneVerified = await this.verification.isVerified(dto.phone, 'phone')
+      if (!phoneVerified) throw new BadRequestException('Please verify your phone number with the code sent to it before creating an account')
+    }
+
+    const passwordHash = await bcrypt.hash(dto.password, 12)
+    const customerId = `MRG-${String(Date.now()).slice(-8)}`
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        passwordHash,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone,
+        customerId,
+        emailVerified: true,
+        phoneVerified,
+      }
+    })
+
+    return this.generateTokens(user)
+  }
+
+  async login(dto: LoginDto) {
+    const user = await this.prisma.user.findUnique({ where: { email: dto.email } })
+    if (!user || !user.passwordHash) throw new UnauthorizedException('Invalid credentials')
+
+    const valid = await bcrypt.compare(dto.password, user.passwordHash)
+    if (!valid) throw new UnauthorizedException('Invalid credentials')
+
+    return this.generateTokens(user)
+  }
+
+  async refreshTokens(refreshToken: string) {
+    let payload: { sub: string }
+    try {
+      payload = this.jwt.verify(refreshToken, { secret: process.env.JWT_REFRESH_SECRET })
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token')
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: payload.sub } })
+    if (!user) throw new UnauthorizedException('Invalid refresh token')
+
+    return this.generateTokens(user)
+  }
+
+  private generateTokens(user: any) {
+    const payload = { sub: user.id, email: user.email }
+    return {
+      accessToken: this.jwt.sign(payload, { expiresIn: '15m' }),
+      refreshToken: this.jwt.sign(payload, {
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: '7d'
+      }),
+      customerId: user.customerId,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        customerId: user.customerId,
+        role: user.role,
+      }
+    }
+  }
+}

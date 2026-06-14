@@ -1,5 +1,36 @@
-﻿import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
-export async function middleware(request: NextRequest){const p=request.nextUrl.pathname;const protectedPath=p.startsWith('/admin')||p.startsWith('/profile')||p.startsWith('/orders');if(!protectedPath)return NextResponse.next();const token=await getToken({req:request,secret:process.env.NEXTAUTH_SECRET});if(!token){const login=new URL('/login',request.url);login.searchParams.set('callbackUrl',p);return NextResponse.redirect(login)}if(p.startsWith('/admin')&&token.role!=='admin')return NextResponse.redirect(new URL('/',request.url));return NextResponse.next()}
-export const config={matcher:['/admin/:path*','/profile/:path*','/orders/:path*']};
+﻿import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
+
+export default withAuth(
+  function middleware(req) {
+    const { pathname } = req.nextUrl
+    const token = req.nextauth.token
+
+    if (pathname.startsWith('/admin')) {
+      const role = token?.role
+      const allowedForSupport = pathname.startsWith('/admin/orders')
+      if (role !== 'ADMIN' && !(role === 'SUPPORT' && allowedForSupport)) {
+        return NextResponse.redirect(new URL('/', req.url))
+      }
+    }
+
+    return NextResponse.next()
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl
+        if (pathname.startsWith('/profile')) return !!token
+        if (pathname.startsWith('/orders')) return !!token
+        if (pathname.startsWith('/wishlist')) return !!token
+        if (pathname.startsWith('/addresses')) return !!token
+        if (pathname.startsWith('/admin')) return !!token
+        return true
+      }
+    }
+  }
+)
+
+export const config = {
+  matcher: ['/profile/:path*', '/orders/:path*', '/wishlist/:path*', '/addresses/:path*', '/admin/:path*']
+}

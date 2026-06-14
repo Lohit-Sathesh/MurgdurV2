@@ -1,20 +1,54 @@
-﻿import type { Product } from '@/types/product';
-import { Badge } from './Badge';
+﻿'use client'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Heart } from 'lucide-react'
+import { Badge } from './Badge'
+import { PriceDisplay } from './PriceDisplay'
+import { useWishlist } from '@/hooks/useWishlist'
+import { useAuth } from '@/hooks/useAuth'
+import type { Product } from '@/types/product'
 
-export function ProductCard({ product }: { product: Product }) {
-  const image = product.media[0];
+export function ProductCard({ product, onClick, onWishlistChange }: { product: Product; onClick?: () => void; onWishlistChange?: (productId: string, inWishlist: boolean) => void }) {
+  const totalStock = product.variants?.reduce((s, v) => s + v.stock, 0) ?? 1
+  const { isInWishlist, toggle } = useWishlist()
+  const { isLoggedIn } = useAuth()
+  const router = useRouter()
+  const inWishlist = isInWishlist(product.id)
+
+  async function handleWishlistClick(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isLoggedIn) {
+      router.push('/login')
+      return
+    }
+    const nowInWishlist = await toggle(product.id)
+    onWishlistChange?.(product.id, !!nowInWishlist)
+  }
+
   return (
-    <a href={`/products/${product.slug}`} className="group block border border-mist p-4 transition hover:border-champagne">
-      <div className="aspect-[4/5] overflow-hidden bg-mist">
-        {image ? <img src={image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : null}
-      </div>
-      <div className="mt-4 flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-serif text-2xl">{product.name}</h3>
-          <p className="mt-1 text-sm text-graphite">{product.category}</p>
+    <Link href={`/products/${product.slug}`} onClick={onClick} className="group block">
+      <div className="relative aspect-[3/4] overflow-hidden bg-luxury-gray">
+        {product.images?.[0] && (
+          <Image src={product.images[0].url} alt={product.name} fill
+            className="object-cover group-hover:scale-105 transition-transform duration-700" />
+        )}
+        <div className="absolute top-3 left-3 space-y-1">
+          {totalStock === 0 && <Badge variant="out-of-stock">Out of Stock</Badge>}
+          {totalStock > 0 && totalStock < 10 && <Badge variant="low-stock">Low Stock</Badge>}
         </div>
-        <Badge>${(product.price / 100).toFixed(0)}</Badge>
+        <button onClick={handleWishlistClick} aria-label="Toggle wishlist"
+          className="absolute top-3 right-3 p-2 rounded-full bg-luxury-black/40 backdrop-blur-sm hover:bg-luxury-black/70 transition-colors">
+          <Heart className={`w-4 h-4 transition-colors ${inWishlist ? 'fill-luxury-gold text-luxury-gold' : 'text-luxury-white'}`} />
+        </button>
       </div>
-    </a>
-  );
+      <div className="mt-4 space-y-1">
+        <h3 className="text-luxury-white text-sm tracking-wide group-hover:text-luxury-gold transition-colors">
+          {product.name}
+        </h3>
+        <PriceDisplay price={product.price} comparePrice={product.comparePrice} />
+      </div>
+    </Link>
+  )
 }

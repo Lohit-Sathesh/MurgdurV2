@@ -1,18 +1,25 @@
-﻿export type UserRole = 'client' | 'admin';
+﻿export interface Address {
+  id: string
+  label: string | null
+  firstName: string
+  lastName: string
+  line1: string
+  line2: string | null
+  city: string
+  state: string
+  postalCode: string
+  country: string
+  phone: string | null
+  isDefault: boolean
+}
 
-export type User = {
-  id: string;
-  email: string;
-  name?: string;
-  role: UserRole;
-  customerId?: string;
-};
-
-export type Address = {
-  id: string;
-  line1: string;
-  line2?: string;
-  city: string;
-  country: string;
-  postal: string;
-};
+export interface User {
+  id: string
+  customerId: string
+  email: string
+  firstName: string
+  lastName: string
+  phone: string | null
+  avatarUrl: string | null
+  addresses: Address[]
+}

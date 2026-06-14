@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+out/
+build/
+
+# Env files (keep examples)
+.env
+.env.*
+!.env.example
+!*/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.DS_Store
+*.tsbuildinfo
+
+# Prisma generated client tmp files
+**/query_engine-*.tmp*

@@ -1,6 +1,34 @@
 ﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
-@font-face{font-family:'Luxury Serif';src:url('/fonts/luxury-serif.woff2') format('woff2');font-display:swap}
-@font-face{font-family:'Luxury Sans';src:url('/fonts/luxury-sans.woff2') format('woff2');font-display:swap}
-:root{color:#12110f;background:#f7f3ec}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:'Luxury Sans',system-ui,sans-serif;background:#f7f3ec}a{color:inherit;text-decoration:none}html.lenis,html.lenis body{height:auto}
+
+@font-face {
+  font-family: 'LuxurySerif';
+  src: url('/fonts/luxury-serif.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LuxurySans';
+  src: url('/fonts/luxury-sans.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: auto; } /* Lenis handles scroll */
+
+body {
+  font-family: 'LuxurySans', sans-serif;
+  background: #0a0a0a;
+  color: #f5f0eb;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { font-family: 'LuxurySerif', serif; font-weight: 300; letter-spacing: 0.05em; }
+
+::selection { background: #c9a96e; color: #0a0a0a; }
+
+::-webkit-scrollbar { display: none; }
