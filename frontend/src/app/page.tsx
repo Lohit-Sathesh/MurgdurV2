@@ -133,7 +133,7 @@ export default async function HomePage() {
         linkLabel="Explore the Collection"
       />
 
-      <section className="py-32 border-t border-b border-luxury-gray">
+      <section className="py-32 border-t border-b border-luxury-gray bg-gradient-to-b from-luxury-black to-[#111111]">
   <div className="max-w-5xl mx-auto px-8 text-center">
 
     <p className="text-luxury-gold uppercase tracking-[0.4em] text-xs mb-6">
@@ -156,7 +156,7 @@ export default async function HomePage() {
 </section>
       {/* Remaining image / video sections from admin */}
       {scrollSlides.length > 2 && <ScrollGallery slides={scrollSlides.slice(2)} />}
-      <section className="py-32 border-t border-luxury-gray">
+      <section className="py-32 border-t border-luxury-gray bg-gradient-to-b from-[#111111] to-luxury-black">
   <div className="max-w-4xl mx-auto px-8 text-center">
 
     <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
