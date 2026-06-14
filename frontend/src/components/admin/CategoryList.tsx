@@ -35,7 +35,7 @@ export function CategoryList({ categories }: { categories: CategoryOption[] }) {
   if (categories.length === 0) return null
 
   return (
-    <div className="border border-luxury-gray p-6 max-w-xl space-y-3">
+    <div className="border border-luxury-gray rounded-xl bg-luxury-white/[0.02] p-6 max-w-xl space-y-3">
       <h2 className="text-xs uppercase tracking-luxury text-luxury-muted">Categories</h2>
       {error && <p className="text-red-400 text-sm">{error}</p>}
       <ul className="divide-y divide-luxury-gray/50">
@@ -45,11 +45,11 @@ export function CategoryList({ categories }: { categories: CategoryOption[] }) {
               <span className="text-luxury-white">{c.label}</span>
               <div className="flex gap-4">
                 <button onClick={() => setEditingId(prev => prev === c.id ? null : c.id)}
-                  className="text-luxury-gold text-xs tracking-luxury uppercase hover:text-luxury-white">
+                  className="text-luxury-gold text-xs tracking-luxury uppercase hover:text-luxury-white transition-colors">
                   {editingId === c.id ? 'Close' : 'Edit'}
                 </button>
                 <button onClick={() => deleteCategory(c.id, c.label)} disabled={removingId === c.id}
-                  className="text-red-400 text-xs tracking-luxury uppercase hover:text-red-300 disabled:opacity-50">
+                  className="text-red-400 text-xs tracking-luxury uppercase hover:text-red-300 disabled:opacity-50 transition-colors">
                   {removingId === c.id ? 'Removing…' : 'Remove'}
                 </button>
               </div>
@@ -65,6 +65,7 @@ export function CategoryList({ categories }: { categories: CategoryOption[] }) {
 }
 
 function CategoryEditForm({ category, onDone }: { category: CategoryOption; onDone: () => void }) {
+  const [name, setName] = useState(category.label.split(' > ').pop() ?? category.label)
   const [description, setDescription] = useState(category.description ?? '')
   const [imageUrl, setImageUrl] = useState(category.imageUrl ?? '')
   const [uploading, setUploading] = useState(false)
@@ -94,7 +95,7 @@ function CategoryEditForm({ category, onDone }: { category: CategoryOption; onDo
     setSaving(true)
     setError(null)
     try {
-      await api.patch(`/admin/categories/${category.id}`, { description, imageUrl })
+      await api.patch(`/admin/categories/${category.id}`, { name, description, imageUrl })
       onDone()
     } catch (err: any) {
       setError(err?.message ?? 'Failed to save category.')
@@ -104,19 +105,25 @@ function CategoryEditForm({ category, onDone }: { category: CategoryOption; onDo
   }
 
   return (
-    <div className="mt-4 p-4 bg-luxury-white/[0.02] border border-luxury-gray space-y-4">
+    <div className="mt-4 p-4 bg-luxury-white/[0.02] border border-luxury-gray rounded-lg space-y-4">
+      <div>
+        <label className="block text-luxury-muted text-xs uppercase tracking-luxury mb-2">Name</label>
+        <input value={name} onChange={e => setName(e.target.value)}
+          placeholder="Category name"
+          className="w-full bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-3 py-2 focus:border-luxury-gold outline-none transition-colors" />
+      </div>
       <div>
         <label className="block text-luxury-muted text-xs uppercase tracking-luxury mb-2">Description</label>
         <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3}
           placeholder="A short luxury description for this category page…"
-          className="w-full bg-luxury-black border border-luxury-gray text-luxury-white text-sm px-3 py-2 focus:border-luxury-gold outline-none" />
+          className="w-full bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-3 py-2 focus:border-luxury-gold outline-none transition-colors" />
       </div>
       <div>
         <label className="block text-luxury-muted text-xs uppercase tracking-luxury mb-2">Banner Image</label>
         <input type="file" accept="image/*" onChange={handleFileUpload} className="text-luxury-white text-sm" />
         {uploading && <p className="text-luxury-muted text-xs mt-2">Uploading…</p>}
         {imageUrl && (
-          <div className="mt-3 w-full max-w-xs aspect-[16/9] border border-luxury-gray overflow-hidden">
+          <div className="mt-3 w-full max-w-xs aspect-[16/9] border border-luxury-gray rounded-lg overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={imageUrl} alt="" className="w-full h-full object-cover" />
           </div>

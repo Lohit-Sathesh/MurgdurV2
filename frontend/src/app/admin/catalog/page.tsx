@@ -17,6 +17,7 @@ interface AdminProduct {
   comparePrice: string | null
   isActive: boolean
   variants: Array<{ id: string; sku: string; color: string | null; size: string | null; stock: number }>
+  images: Array<{ id: string; url: string; sortOrder: number }>
 }
 
 interface CategoryNode {
@@ -88,23 +89,8 @@ export default async function CatalogAdminPage() {
       {products.length === 0 ? (
         <p className="text-luxury-muted border border-luxury-gray p-8 text-center">No products yet.</p>
       ) : (
-        <div className="overflow-x-auto border border-luxury-gray">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-luxury-muted uppercase text-xs tracking-luxury border-b border-luxury-gray bg-luxury-white/[0.02]">
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">SKU</th>
-                <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Compare At</th>
-                <th className="py-3 px-4">Active</th>
-                <th className="py-3 px-4">Variants</th>
-                <th className="py-3 px-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(p => <ProductRow key={p.id} product={p} categories={productCategoryOptions} />)}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {products.map(p => <ProductRow key={p.id} product={p} categories={productCategoryOptions} />)}
         </div>
       )}
     </section>

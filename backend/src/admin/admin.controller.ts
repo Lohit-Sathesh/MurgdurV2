@@ -154,7 +154,7 @@ export class AdminController {
   @AdminOnly()
   async getAllProducts() {
     return this.prisma.product.findMany({
-      include: { variants: true, category: true },
+      include: { variants: true, category: true, images: { orderBy: { sortOrder: 'asc' } } },
       orderBy: { createdAt: 'desc' },
     });
   }

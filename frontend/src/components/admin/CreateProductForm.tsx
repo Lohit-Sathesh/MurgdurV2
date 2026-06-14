@@ -78,7 +78,7 @@ export function CreateProductForm({ categories }: { categories: CategoryOption[]
   }
 
   return (
-    <div className="border border-luxury-gray p-6 space-y-6 max-w-2xl">
+    <div className="border border-luxury-gray rounded-xl bg-luxury-white/[0.02] p-6 space-y-6 max-w-2xl">
       <div className="grid grid-cols-2 gap-4">
         <input required placeholder="Name" value={form.name} onChange={e => update('name', e.target.value)}
           className="bg-luxury-black border border-luxury-gray text-luxury-white text-sm px-3 py-2 focus:border-luxury-gold outline-none" />

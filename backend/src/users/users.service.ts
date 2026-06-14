@@ -40,6 +40,7 @@ export class UsersService {
         role: true,
         emailVerified: true,
         phoneVerified: true,
+        newsletterSubscribed: true,
         createdAt: true,
         updatedAt: true,
         addresses: true,
