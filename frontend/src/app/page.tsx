@@ -189,9 +189,10 @@ export default async function HomePage() {
       >
         Subscribe
       </button>
-    </div>
+</div>
 
-  </div>
+</div>
+
 </section>
     </>
   )
