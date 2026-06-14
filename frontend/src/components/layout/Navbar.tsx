@@ -33,6 +33,11 @@ export function Navbar() {
 
   return (
     <>
+      <div className="bg-luxury-black border-b border-luxury-gray py-2 text-center">
+  <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-luxury-gold">
+    Complimentary Worldwide Shipping • Private Client Services • New Collection Available
+  </p>
+</div>
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
       {menuOpen && <CategoryDrawer categories={categories} onClose={() => setMenuOpen(false)} />}
       <nav className={`fixed top-0 left-0 right-0 z-30 transition-all duration-500 ${
