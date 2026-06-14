@@ -117,6 +117,27 @@ export default async function HomePage() {
         linkLabel="Explore the Collection"
       />
 
+      <section className="py-32 border-t border-b border-luxury-gray">
+  <div className="max-w-5xl mx-auto px-8 text-center">
+
+    <p className="text-luxury-gold uppercase tracking-[0.4em] text-xs mb-6">
+      Philosophy
+    </p>
+
+    <h2 className="font-serif text-5xl text-luxury-white leading-tight mb-8">
+      Crafted with patience.
+      <br />
+      Designed to endure.
+    </h2>
+
+    <p className="text-luxury-muted max-w-2xl mx-auto text-lg">
+      True luxury is not rushed. Every detail, material,
+      and finish is selected to create timeless pieces
+      that remain relevant for years.
+    </p>
+
+  </div>
+</section>
       {/* Remaining image / video sections from admin */}
       {scrollSlides.length > 2 && <ScrollGallery slides={scrollSlides.slice(2)} />}
       <section className="py-32 border-t border-luxury-gray">
