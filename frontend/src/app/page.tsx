@@ -35,7 +35,10 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSlider slides={heroSlides} />
+      <div className="relative">
+  <HeroSlider slides={heroSlides} />
+  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none" />
+</div>
       <section className="border-y border-luxury-gray bg-luxury-black py-4">
   <div className="max-w-7xl mx-auto px-8">
     <div className="flex flex-wrap justify-center gap-6 text-xs md:text-sm tracking-widest uppercase text-luxury-muted">
