@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useCurrency } from '@/context/CurrencyContext'
 import { COUNTRIES } from '@/lib/countries'
+import { lenisStore } from '@/lib/lenis'
 
 const STORAGE_KEY = 'murgdur-locale-prompted'
 
@@ -16,6 +17,20 @@ export function LocalizationPrompt() {
     const timer = setTimeout(() => setOpen(true), 1200)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (open) {
+      lenisStore.instance?.stop()
+      document.body.style.overflow = 'hidden'
+    } else {
+      lenisStore.instance?.start()
+      document.body.style.overflow = ''
+    }
+    return () => {
+      lenisStore.instance?.start()
+      document.body.style.overflow = ''
+    }
+  }, [open])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -55,7 +70,7 @@ export function LocalizationPrompt() {
           className="w-full bg-transparent border border-luxury-gray px-4 py-2.5 text-sm text-luxury-white placeholder:text-luxury-muted focus:outline-none focus:border-luxury-gold transition-colors mb-4"
         />
 
-        <div className="flex-1 overflow-y-auto border border-luxury-gray/50 divide-y divide-luxury-gray/30">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto border border-luxury-gray/50 divide-y divide-luxury-gray/30">
           {filtered.length === 0 && (
             <p className="px-4 py-6 text-center text-luxury-muted text-sm">No countries found.</p>
           )}
