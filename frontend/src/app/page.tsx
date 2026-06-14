@@ -161,8 +161,9 @@ export default async function HomePage() {
       {/* Remaining image / video sections from admin */}
       {scrollSlides.length > 2 && <ScrollGallery slides={scrollSlides.slice(2)} />}
       <section className="py-32 border-t border-luxury-gray bg-gradient-to-b from-[#111111] to-luxury-black">
-  <div className="max-w-4xl mx-auto px-8 text-center">
-
+  <div className="max-w-4xl mx-auto px-8">
+    
+    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-12 text-center shadow-2xl">
     <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
       Exclusive Access
     </p>
