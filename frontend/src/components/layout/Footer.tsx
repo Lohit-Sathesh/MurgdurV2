@@ -69,25 +69,6 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-luxury-gray">
-  <h3 className="text-luxury-white text-xs tracking-luxury uppercase mb-4">
-    Security & Monitoring
-  </h3>
-
-  <div className="flex flex-wrap gap-3">
-    <span className="px-3 py-1 border border-luxury-gray rounded-full text-xs">
-      NextAuth Security
-    </span>
-
-    <span className="px-3 py-1 border border-luxury-gray rounded-full text-xs">
-      Rate Limiting
-    </span>
-
-    <span className="px-3 py-1 border border-luxury-gray rounded-full text-xs">
-      Sentry Monitoring
-    </span>
-  </div>
-</div>
       <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-luxury-gray text-center">
         <p className="text-luxury-muted text-xs tracking-luxury">© 2026 Murgdur. All rights reserved.</p>
       </div>
