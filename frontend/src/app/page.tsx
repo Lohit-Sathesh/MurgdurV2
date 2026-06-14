@@ -51,7 +51,8 @@ export default async function HomePage() {
   </div>
 </section>
 
-      <section className="py-20 border-y border-luxury-gray">
+      <section className="py-20 border-y border-luxury-gray relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-luxury-gold/5 to-transparent pointer-events-none" />
   <div className="max-w-7xl mx-auto px-8">
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
 
