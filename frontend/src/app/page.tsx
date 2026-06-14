@@ -176,11 +176,11 @@ export default async function HomePage() {
       <input
         type="email"
         placeholder="Your email address"
-        className="bg-transparent border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white"
+        className="bg-black/40 border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white rounded-full focus:border-luxury-gold focus:outline-none transition-all duration-500"
       />
 
       <button
-        className="px-8 py-4 border border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-black transition"
+        className="px-8 py-4 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500"
       >
         Subscribe
       </button>
