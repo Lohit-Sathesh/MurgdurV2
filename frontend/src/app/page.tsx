@@ -119,6 +119,38 @@ export default async function HomePage() {
 
       {/* Remaining image / video sections from admin */}
       {scrollSlides.length > 2 && <ScrollGallery slides={scrollSlides.slice(2)} />}
+      <section className="py-32 border-t border-luxury-gray">
+  <div className="max-w-4xl mx-auto px-8 text-center">
+
+    <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
+      Exclusive Access
+    </p>
+
+    <h2 className="font-serif text-5xl text-luxury-white mb-6">
+      Join The Private List
+    </h2>
+
+    <p className="text-luxury-muted max-w-xl mx-auto mb-10">
+      Receive early access to new collections, limited releases,
+      private events, and curated editorial stories.
+    </p>
+
+    <div className="flex flex-col md:flex-row gap-4 justify-center">
+      <input
+        type="email"
+        placeholder="Your email address"
+        className="bg-transparent border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white"
+      />
+
+      <button
+        className="px-8 py-4 border border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-black transition"
+      >
+        Subscribe
+      </button>
+    </div>
+
+  </div>
+</section>
     </>
   )
 }
