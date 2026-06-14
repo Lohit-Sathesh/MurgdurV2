@@ -85,9 +85,17 @@ export default async function HomePage() {
 </section>
       {/* Products */}
       <section className="px-8 py-24 md:py-32">
-        <h2 className="font-serif text-4xl tracking-luxury text-luxury-white mb-16 text-center">
-          New Arrivals
-        </h2>
+        <div className="text-center mb-16">
+  <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
+    Latest Collection
+  </p>
+
+  <h2 className="font-serif text-5xl text-luxury-white mb-4">
+    New Arrivals
+  </h2>
+
+  <div className="w-24 h-px bg-luxury-gold mx-auto"></div>
+</div>
         <ProductGrid products={newArrivals.slice(0, 4)} />
       </section>
 
@@ -99,9 +107,17 @@ export default async function HomePage() {
 
       {/* Products again */}
       <section className="px-8 py-24 md:py-32">
-        <h2 className="font-serif text-4xl tracking-luxury text-luxury-white mb-16 text-center">
-          The Selection
-        </h2>
+       <div className="text-center mb-16">
+  <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
+    Curated Pieces
+  </p>
+
+  <h2 className="font-serif text-5xl text-luxury-white mb-4">
+    The Selection
+  </h2>
+
+  <div className="w-24 h-px bg-luxury-gold mx-auto"></div>
+</div>
         <ProductGrid products={(featured.length ? featured : newArrivals.slice(4, 8)).slice(0, 4)} />
       </section>
 
