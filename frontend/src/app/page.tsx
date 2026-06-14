@@ -36,6 +36,17 @@ export default async function HomePage() {
   return (
     <>
       <HeroSlider slides={heroSlides} />
+      <section className="border-y border-luxury-gray bg-luxury-black py-4">
+  <div className="max-w-7xl mx-auto px-8">
+    <div className="flex flex-wrap justify-center gap-6 text-xs md:text-sm tracking-widest uppercase text-luxury-muted">
+      <span>✓ Secure Payments</span>
+      <span>✓ Enterprise Security</span>
+      <span>✓ Worldwide Shipping</span>
+      <span>✓ Premium Support</span>
+      <span>✓ Luxury Craftsmanship</span>
+    </div>
+  </div>
+</section>
 
       {/* Products */}
       <section className="px-8 py-24 md:py-32">
