@@ -1,6 +1,7 @@
-﻿import { Injectable, Logger, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common'
+﻿import { Injectable, Logger, UnauthorizedException, ConflictException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { PrismaService } from '../database/prisma.service'
+import { RedisService } from '../database/redis.service'
 import { RegisterDto } from './dto/register.dto'
 import { LoginDto } from './dto/login.dto'
 import { EmailService } from '../email/email.service'
@@ -12,9 +13,13 @@ import * as bcrypt from 'bcrypt'
 export class AuthService {
   private readonly logger = new Logger(AuthService.name)
 
+  private readonly MAX_LOGIN_ATTEMPTS = 5
+  private readonly LOGIN_LOCKOUT_SECONDS = 15 * 60
+
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
+    private redis: RedisService,
     private email: EmailService,
     private sms: SmsService,
     private verification: VerificationService,
@@ -84,13 +89,27 @@ export class AuthService {
     return this.generateTokens(user)
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, ip: string) {
+    const lockKey = `login_attempts:${ip}:${dto.email.toLowerCase()}`
+
+    const attempts = await this.redis.get(lockKey)
+    if (attempts && parseInt(attempts) >= this.MAX_LOGIN_ATTEMPTS) {
+      const retryAfter = await this.redis.ttl(lockKey)
+      throw new HttpException(
+        `Too many failed login attempts. Please try again in ${Math.ceil(retryAfter / 60)} minute(s).`,
+        HttpStatus.TOO_MANY_REQUESTS,
+      )
+    }
+
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } })
-    if (!user || !user.passwordHash) throw new UnauthorizedException('Invalid credentials')
+    const valid = user?.passwordHash ? await bcrypt.compare(dto.password, user.passwordHash) : false
 
-    const valid = await bcrypt.compare(dto.password, user.passwordHash)
-    if (!valid) throw new UnauthorizedException('Invalid credentials')
+    if (!user || !valid) {
+      await this.redis.incrWithExpiry(lockKey, this.LOGIN_LOCKOUT_SECONDS)
+      throw new UnauthorizedException('Invalid credentials')
+    }
 
+    await this.redis.del(lockKey)
     return this.generateTokens(user)
   }
 
