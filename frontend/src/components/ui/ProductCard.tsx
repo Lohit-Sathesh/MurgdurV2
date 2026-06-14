@@ -48,7 +48,7 @@ export function ProductCard({ product, onClick, onWishlistChange }: { product: P
         </button>
       </div>
       <div className="mt-4 space-y-1">
-        <h3 className="text-luxury-white text-sm tracking-wide group-hover:text-luxury-gold transition-all duration-500 group-hover:tracking-[0.15em]">
+        <h3 className="text-luxury-white text-sm tracking-wide group-hover:text-luxury-gold transition-all duration-700 group-hover:tracking-[0.2em]">
           {product.name}
         </h3>
         <PriceDisplay price={product.price} comparePrice={product.comparePrice} />
