@@ -29,7 +29,8 @@ export function EditorialSection({ eyebrow, heading, body, linkUrl, linkLabel = 
 
   return (
     <section className="px-8 py-32 md:py-40 flex items-center justify-center">
-      <div ref={ref} className="max-w-2xl text-center">
+      <div ref={ref} className="max-w-2xl text-center relative">
+        <div className="w-24 h-px bg-gradient-to-r from-transparent via-luxury-gold to-transparent mx-auto mb-8"></div>
         {eyebrow && (
           <p className="text-luxury-gold text-xs tracking-luxury uppercase mb-6">{eyebrow}</p>
         )}
@@ -41,7 +42,7 @@ export function EditorialSection({ eyebrow, heading, body, linkUrl, linkLabel = 
         </p>
         {linkUrl && (
           <Link href={linkUrl}
-            className="inline-block border border-luxury-white text-luxury-white text-xs tracking-luxury uppercase px-10 py-4 hover:bg-luxury-white hover:text-luxury-black transition-all duration-500">
+            className="inline-block border border-luxury-white text-luxury-white text-xs tracking-luxury uppercase px-10 py-4 hover:bg-luxury-gold hover:text-luxury-black hover:border-luxury-gold transition-all duration-700">
             {linkLabel}
           </Link>
         )}

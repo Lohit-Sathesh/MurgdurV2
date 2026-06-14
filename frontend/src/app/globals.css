@@ -29,6 +29,9 @@ body {
 
 h1, h2, h3 { font-family: 'LuxurySerif', serif; font-weight: 300; letter-spacing: 0.05em; }
 
-::selection { background: #c9a96e; color: #0a0a0a; }
+::selection {
+  background: #d4af37;
+  color: #000;
+}
 
 ::-webkit-scrollbar { display: none; }

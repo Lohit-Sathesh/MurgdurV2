@@ -20,6 +20,23 @@ export function Footer() {
           <p className="font-serif text-2xl tracking-luxury text-luxury-white mb-6">MURGDUR</p>
           <p className="text-luxury-muted text-xs leading-relaxed tracking-wide mb-6">
             Luxury fashion crafted for the extraordinary.
+            <div className="mt-8">
+  <p className="text-xs uppercase tracking-[0.3em] text-luxury-gold mb-4">
+    Private Access
+  </p>
+
+  <div className="flex gap-2">
+    <input
+      type="email"
+      placeholder="Your email"
+      className="bg-black/40 border border-luxury-gray px-4 py-3 text-sm text-luxury-white rounded-full flex-1 focus:border-luxury-gold focus:outline-none"
+    />
+
+    <button className="px-6 py-3 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500">
+      Join
+    </button>
+  </div>
+</div>
           </p>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map(s => (
@@ -56,6 +73,25 @@ export function Footer() {
           </div>
         ))}
       </div>
+      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-luxury-gray">
+  <h3 className="text-luxury-white text-xs tracking-luxury uppercase mb-4">
+    Security & Monitoring
+  </h3>
+
+  <div className="flex flex-wrap gap-3">
+    <span className="px-3 py-1 border border-luxury-gray rounded-full text-xs">
+      NextAuth Security
+    </span>
+
+    <span className="px-3 py-1 border border-luxury-gray rounded-full text-xs">
+      Rate Limiting
+    </span>
+
+    <span className="px-3 py-1 border border-luxury-gray rounded-full text-xs">
+      Sentry Monitoring
+    </span>
+  </div>
+</div>
       <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-luxury-gray text-center">
         <p className="text-luxury-muted text-xs tracking-luxury">© 2026 Murgdur. All rights reserved.</p>
       </div>

@@ -28,11 +28,15 @@ export function ProductCard({ product, onClick, onWishlistChange }: { product: P
   }
 
   return (
-    <Link href={`/products/${product.slug}`} onClick={onClick} className="group block">
-      <div className="relative aspect-[3/4] overflow-hidden bg-luxury-gray">
+    <Link
+  href={`/products/${product.slug}`}
+  onClick={onClick}
+  className="group block transition-all duration-500 hover:-translate-y-3"
+>
+      <div className="relative aspect-[3/4] overflow-hidden bg-luxury-gray border border-transparent group-hover:border-luxury-gold group-hover:shadow-[0_0_30px_rgba(212,175,55,0.25)] transition-all duration-700">
         {product.images?.[0] && (
           <Image src={product.images[0].url} alt={product.name} fill
-            className="object-cover group-hover:scale-105 transition-transform duration-700" />
+            className="object-cover group-hover:scale-110 transition-transform duration-1000" />
         )}
         <div className="absolute top-3 left-3 space-y-1">
           {totalStock === 0 && <Badge variant="out-of-stock">Out of Stock</Badge>}
@@ -44,7 +48,7 @@ export function ProductCard({ product, onClick, onWishlistChange }: { product: P
         </button>
       </div>
       <div className="mt-4 space-y-1">
-        <h3 className="text-luxury-white text-sm tracking-wide group-hover:text-luxury-gold transition-colors">
+        <h3 className="text-luxury-white text-sm tracking-wide group-hover:text-luxury-gold transition-all duration-700 group-hover:tracking-[0.2em]">
           {product.name}
         </h3>
         <PriceDisplay price={product.price} comparePrice={product.comparePrice} />
