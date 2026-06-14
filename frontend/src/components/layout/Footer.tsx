@@ -20,24 +20,24 @@ export function Footer() {
           <p className="font-serif text-2xl tracking-luxury text-luxury-white mb-6">MURGDUR</p>
           <p className="text-luxury-muted text-xs leading-relaxed tracking-wide mb-6">
             Luxury fashion crafted for the extraordinary.
-            <div className="mt-8">
-  <p className="text-xs uppercase tracking-[0.3em] text-luxury-gold mb-4">
-    Private Access
-  </p>
-
-  <div className="flex gap-2">
-    <input
-      type="email"
-      placeholder="Your email"
-      className="bg-black/40 border border-luxury-gray px-4 py-3 text-sm text-luxury-white rounded-full flex-1 focus:border-luxury-gold focus:outline-none"
-    />
-
-    <button className="px-6 py-3 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500">
-      Join
-    </button>
-  </div>
-</div>
           </p>
+          <div className="mb-6">
+            <p className="text-xs uppercase tracking-[0.3em] text-luxury-gold mb-4">
+              Private Access
+            </p>
+
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="bg-black/40 border border-luxury-gray px-4 py-3 text-sm text-luxury-white rounded-full flex-1 focus:border-luxury-gold focus:outline-none"
+              />
+
+              <button className="px-6 py-3 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500">
+                Join
+              </button>
+            </div>
+          </div>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map(s => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}

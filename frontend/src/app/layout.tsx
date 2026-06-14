@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from 'next'
-import { Providers } from '@/components/Providers'
+import { Providers } from '@/components/providers'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CartDrawer } from '@/components/ui/CartDrawer'
