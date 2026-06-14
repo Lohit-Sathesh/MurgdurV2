@@ -40,9 +40,11 @@ export function Navbar() {
 </div>
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
       {menuOpen && <CategoryDrawer categories={categories} onClose={() => setMenuOpen(false)} />}
-      <nav className={`fixed top-0 left-0 right-0 z-30 transition-all duration-500 ${
-        scrolled ? 'bg-luxury-black/95 backdrop-blur-sm' : 'bg-transparent'
-      }`}>
+     <nav className={`fixed top-0 left-0 right-0 z-30 transition-all duration-700 ${
+  scrolled
+    ? 'bg-black/70 backdrop-blur-xl border-b border-white/10 shadow-2xl'
+    : 'bg-transparent'
+}`}>
         <div className="max-w-7xl mx-auto px-8 h-20 grid grid-cols-3 items-center">
           <div className="flex items-center justify-start">
             <button onClick={() => setMenuOpen(true)} aria-label="Open menu"
