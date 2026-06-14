@@ -3,6 +3,7 @@ import { Providers } from '@/components/providers'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { CartDrawer } from '@/components/ui/CartDrawer'
+import { LocalizationPrompt } from '@/components/ui/LocalizationPrompt'
 import '@/app/globals.css'
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Navbar />
           <CartDrawer />
+          <LocalizationPrompt />
           <main>{children}</main>
           <Footer />
         </Providers>

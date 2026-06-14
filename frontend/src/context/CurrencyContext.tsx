@@ -3,10 +3,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { currencyForCountry, formatPrice, type CurrencyCode } from '@/lib/currency'
 
 const COOKIE_NAME = 'murgdur-currency'
+const COUNTRY_COOKIE_NAME = 'murgdur-country'
 
 interface CurrencyContextType {
   currency: CurrencyCode
+  country: string | null
   setCurrency: (currency: CurrencyCode) => void
+  setCountry: (country: string) => void
   format: (amountInINR: number | string) => string
 }
 
@@ -23,20 +26,30 @@ function writeCookie(name: string, value: string) {
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrencyState] = useState<CurrencyCode>('INR')
+  const [country, setCountryState] = useState<string | null>(null)
 
   useEffect(() => {
-    const saved = readCookie(COOKIE_NAME)
-    if (saved === 'INR' || saved === 'USD' || saved === 'EUR') {
-      setCurrencyState(saved)
+    const savedCountry = readCookie(COUNTRY_COOKIE_NAME)
+    const savedCurrency = readCookie(COOKIE_NAME)
+
+    if (savedCountry) setCountryState(savedCountry)
+
+    if (savedCurrency === 'INR' || savedCurrency === 'USD' || savedCurrency === 'EUR') {
+      setCurrencyState(savedCurrency)
       return
     }
 
     fetch('https://ipapi.co/json/')
       .then(res => res.json())
       .then(data => {
-        const detected = currencyForCountry(data?.country_code ?? 'IN')
+        const detectedCountry = data?.country_code ?? 'IN'
+        const detected = currencyForCountry(detectedCountry)
         setCurrencyState(detected)
         writeCookie(COOKIE_NAME, detected)
+        if (!savedCountry) {
+          setCountryState(detectedCountry)
+          writeCookie(COUNTRY_COOKIE_NAME, detectedCountry)
+        }
       })
       .catch(() => {})
   }, [])
@@ -46,9 +59,15 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     writeCookie(COOKIE_NAME, next)
   }
 
+  function setCountry(next: string) {
+    setCountryState(next)
+    writeCookie(COUNTRY_COOKIE_NAME, next)
+    setCurrency(currencyForCountry(next))
+  }
+
   return (
     <CurrencyContext.Provider value={{
-      currency, setCurrency,
+      currency, country, setCurrency, setCountry,
       format: (amountInINR) => formatPrice(amountInINR, currency),
     }}>
       {children}
