@@ -120,7 +120,7 @@ export default async function HomePage() {
     The Selection
   </h2>
 
-  <div className="w-24 h-px bg-luxury-gold mx-auto"></div>
+  <div className="w-24 h-px bg-gradient-to-r from-transparent via-luxury-gold to-transparent mx-auto"></div>
 </div>
         <ProductGrid products={(featured.length ? featured : newArrivals.slice(4, 8)).slice(0, 4)} />
       </section>
