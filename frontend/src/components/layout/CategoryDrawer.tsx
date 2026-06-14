@@ -129,12 +129,6 @@ export function CategoryDrawer({ categories, onClose }: { categories: Category[]
             <span className="font-serif text-xl tracking-luxury text-luxury-white uppercase">{active?.name}</span>
           </div>
           <nav className="px-8 py-10 space-y-1">
-            {active && (
-              <Link href={`/collections/${active.slug}`} onClick={handleClose}
-                className="block py-4 border-b border-luxury-gray/50 text-luxury-gold text-sm tracking-luxury uppercase hover:text-luxury-white transition-colors">
-                View All {active.name}
-              </Link>
-            )}
             {active?.children?.map(child => (
               <CategoryNode key={child.id} category={child} onClose={handleClose} />
             ))}
