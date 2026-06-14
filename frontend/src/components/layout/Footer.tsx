@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { NewsletterForm } from '@/components/ui/NewsletterForm'
 
 const SOCIAL_LINKS = [
   { label: 'Instagram', href: 'https://instagram.com/murgdur', icon: Instagram },
@@ -26,17 +27,12 @@ export function Footer() {
               Private Access
             </p>
 
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="bg-black/40 border border-luxury-gray px-4 py-3 text-sm text-luxury-white rounded-full flex-1 focus:border-luxury-gold focus:outline-none"
-              />
-
-              <button className="px-6 py-3 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500">
-                Join
-              </button>
-            </div>
+            <NewsletterForm
+              layoutClassName="flex gap-2"
+              inputClassName="bg-black/40 border border-luxury-gray px-4 py-3 text-sm text-luxury-white rounded-full flex-1 focus:border-luxury-gold focus:outline-none"
+              buttonClassName="px-6 py-3 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500"
+              buttonLabel="Join"
+            />
           </div>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map(s => (

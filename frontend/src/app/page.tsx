@@ -3,6 +3,7 @@ import { ScrollVideoPlayer } from '@/components/cinematic/ScrollVideoPlayer'
 import { ScrollGallery } from '@/components/cinematic/ScrollGallery'
 import { EditorialSection } from '@/components/cinematic/EditorialSection'
 import { ProductGrid } from '@/components/shop/ProductGrid'
+import { NewsletterForm } from '@/components/ui/NewsletterForm'
 import { api } from '@/lib/api'
 import type { HeroSlide } from '@/components/cinematic/HeroSlider'
 
@@ -39,54 +40,6 @@ export default async function HomePage() {
   <HeroSlider slides={heroSlides} />
   <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none" />
 </div>
-      <section className="border-y border-luxury-gray bg-luxury-black py-4">
-  <div className="max-w-7xl mx-auto px-8">
-    <div className="flex flex-wrap justify-center gap-6 text-xs md:text-sm tracking-widest uppercase text-luxury-muted">
-      <span>✓ Secure Payments</span>
-      <span>✓ Enterprise Security</span>
-      <span>✓ Worldwide Shipping</span>
-      <span>✓ Premium Support</span>
-      <span>✓ Luxury Craftsmanship</span>
-    </div>
-  </div>
-</section>
-
-      <section className="py-20 border-y border-luxury-gray relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-luxury-gold/5 to-transparent pointer-events-none" />
-  <div className="max-w-7xl mx-auto px-8">
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-
-      <div>
-        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">10K+</p>
-        <p className="text-luxury-muted text-sm mt-2">
-          Customers
-        </p>
-      </div>
-
-      <div>
-        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">50+</p>
-        <p className="text-luxury-muted text-sm mt-2">
-          Countries
-        </p>
-      </div>
-
-      <div>
-        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">99.9%</p>
-        <p className="text-luxury-muted text-sm mt-2">
-          Uptime
-        </p>
-      </div>
-
-      <div>
-        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">24/7</p>
-        <p className="text-luxury-muted text-sm mt-2">
-          Support
-        </p>
-      </div>
-
-    </div>
-  </div>
-</section>
       {/* Products */}
       <section className="px-8 py-24 md:py-32">
         <div className="text-center mb-16">
@@ -177,19 +130,12 @@ export default async function HomePage() {
       private events, and curated editorial stories.
     </p>
 
-    <div className="flex flex-col md:flex-row gap-4 justify-center">
-      <input
-        type="email"
-        placeholder="Your email address"
-        className="bg-black/40 border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white rounded-full focus:border-luxury-gold focus:outline-none transition-all duration-500"
-      />
-
-      <button
-        className="px-8 py-4 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500"
-      >
-        Subscribe
-      </button>
-</div>
+    <NewsletterForm
+      layoutClassName="flex flex-col md:flex-row gap-4 justify-center"
+      inputClassName="bg-black/40 border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white rounded-full focus:border-luxury-gold focus:outline-none transition-all duration-500"
+      buttonClassName="px-8 py-4 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500"
+      buttonLabel="Subscribe"
+    />
 
 </div>
 

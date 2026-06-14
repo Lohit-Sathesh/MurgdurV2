@@ -250,4 +250,43 @@ export class EmailService {
 
     return this.sendEmail(customerEmail, `Refund for order ${orderId}`, html);
   }
+
+  /**
+   * Send newsletter subscription welcome email
+   */
+  async sendNewsletterWelcome(email: string) {
+    const html = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; background-color: #0a0a0a; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #000; color: #fff; padding: 30px; text-align: center; letter-spacing: 4px; }
+            .content { padding: 30px; background-color: #fff; }
+            .gold { color: #d4af37; }
+            .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>MURGDUR</h1>
+            </div>
+            <div class="content">
+              <p>Hello,</p>
+              <p>Thank you for subscribing to the <span class="gold">Murgdur</span> Private List!</p>
+              <p>You'll now be the first to know about new collections, limited releases, private events, and curated editorial stories from Maison Murgdur.</p>
+              <p>Welcome to the world of timeless luxury.</p>
+              <p>Warm regards,<br/>The Murgdur Team</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2026 Murgdur. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    return this.sendEmail(email, 'Welcome to the Murgdur Private List', html);
+  }
 }
