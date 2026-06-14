@@ -16,7 +16,7 @@ interface AdminProduct {
   price: string
   comparePrice: string | null
   isActive: boolean
-  variants: Array<{ id: string; sku: string; color: string | null; size: string | null; stock: number }>
+  variants: Array<{ id: string; sku: string; color: string | null; colorHex: string | null; size: string | null; stock: number }>
   images: Array<{ id: string; url: string; sortOrder: number }>
 }
 

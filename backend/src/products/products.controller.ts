@@ -11,6 +11,9 @@ export class ProductsController {
   @Get('categories')
   getCategories() { return this.products.getCategories() }
 
+  @Get('filters')
+  getFilters(@Query('category') category?: string) { return this.products.getFilters(category) }
+
   @Get()
   findAll(@Query() query: ProductQueryDto) { return this.products.findAll(query) }
 

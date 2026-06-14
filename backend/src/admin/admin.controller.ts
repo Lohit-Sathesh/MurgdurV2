@@ -202,18 +202,60 @@ export class AdminController {
   }
 
   /**
-   * Update product variant stock/price (admin only)
+   * Add a new variant (color/size) to an existing product (admin only)
+   */
+  @Post('products/:id/variants')
+  @AdminOnly()
+  async createVariant(
+    @Param('id') productId: string,
+    @Body() body: { sku: string; color?: string; colorHex?: string; size?: string; stock?: number; price?: number },
+  ) {
+    const existing = await this.prisma.productVariant.findUnique({ where: { sku: body.sku } });
+    if (existing) {
+      throw new BadRequestException(`Variant SKU "${body.sku}" is already in use.`);
+    }
+    return this.prisma.productVariant.create({
+      data: {
+        productId,
+        sku: body.sku,
+        color: body.color || null,
+        colorHex: body.colorHex || null,
+        size: body.size || null,
+        stock: body.stock ?? 0,
+        price: body.price,
+      },
+    });
+  }
+
+  /**
+   * Update product variant fields (admin only)
    */
   @Patch('products/variants/:id')
   @AdminOnly()
   async updateVariant(
     @Param('id') id: string,
-    @Body() body: { stock?: number; price?: number; isActive?: boolean },
+    @Body() body: { stock?: number; price?: number; isActive?: boolean; color?: string; colorHex?: string; size?: string },
   ) {
     return this.prisma.productVariant.update({
       where: { id },
       data: body,
     });
+  }
+
+  /**
+   * Remove a product variant (admin only)
+   */
+  @Delete('products/variants/:id')
+  @AdminOnly()
+  async deleteVariant(@Param('id') id: string) {
+    const orderItemCount = await this.prisma.orderItem.count({ where: { variantId: id } });
+    if (orderItemCount > 0) {
+      throw new BadRequestException(
+        'This variant has order history and cannot be deleted. Deactivate it instead.',
+      );
+    }
+    await this.prisma.productVariant.delete({ where: { id } });
+    return { id };
   }
 
   /**

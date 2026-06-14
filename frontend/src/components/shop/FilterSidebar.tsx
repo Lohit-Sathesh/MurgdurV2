@@ -1,15 +1,29 @@
 ﻿'use client'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 
-const COLORS = ['Black', 'White', 'Camel', 'Navy', 'Burgundy', 'Charcoal', 'Gold']
-const SIZES  = ['XS', 'S', 'M', 'L', 'XL', '46', '48', '50', '52', '54']
+interface ColorOption {
+  name: string
+  hex: string | null
+}
 
-export function FilterSidebar() {
+export function FilterSidebar({ category }: { category?: string }) {
   const router = useRouter()
   const params = useSearchParams()
   const [minPrice, setMinPrice] = useState(params.get('minPrice') ?? '')
   const [maxPrice, setMaxPrice] = useState(params.get('maxPrice') ?? '')
+  const [colors, setColors] = useState<ColorOption[]>([])
+  const [sizes, setSizes] = useState<string[]>([])
+
+  useEffect(() => {
+    api.get('/products/filters', { params: category ? { category } : {} })
+      .then(res => {
+        setColors(res.data?.colors ?? [])
+        setSizes(res.data?.sizes ?? [])
+      })
+      .catch(() => {})
+  }, [category])
 
   function setFilter(key: string, value: string) {
     const p = new URLSearchParams(params.toString())
@@ -26,35 +40,42 @@ export function FilterSidebar() {
 
   return (
     <aside className="w-48 shrink-0 space-y-10">
-      <div>
-        <p className="text-luxury-white text-xs tracking-luxury uppercase mb-4">Color</p>
-        <div className="space-y-2">
-          {COLORS.map(c => (
-            <button key={c} onClick={() => setFilter('color', c.toLowerCase())}
-              className={`block text-xs tracking-wide transition-colors ${
-                params.get('color') === c.toLowerCase()
-                  ? 'text-luxury-gold' : 'text-luxury-muted hover:text-luxury-white'
-              }`}>
-              {c}
-            </button>
-          ))}
+      {colors.length > 0 && (
+        <div>
+          <p className="text-luxury-white text-xs tracking-luxury uppercase mb-4">Color</p>
+          <div className="space-y-2">
+            {colors.map(c => (
+              <button key={c.name} onClick={() => setFilter('color', c.name.toLowerCase())}
+                className={`flex items-center gap-2 text-xs tracking-wide transition-colors ${
+                  params.get('color') === c.name.toLowerCase()
+                    ? 'text-luxury-gold' : 'text-luxury-muted hover:text-luxury-white'
+                }`}>
+                {c.hex && (
+                  <span className="w-3 h-3 rounded-full border border-luxury-gray inline-block" style={{ backgroundColor: c.hex }} />
+                )}
+                {c.name}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-      <div>
-        <p className="text-luxury-white text-xs tracking-luxury uppercase mb-4">Size</p>
-        <div className="flex flex-wrap gap-2">
-          {SIZES.map(s => (
-            <button key={s} onClick={() => setFilter('size', s)}
-              className={`w-10 h-10 text-xs tracking-wide border transition-all ${
-                params.get('size') === s
-                  ? 'border-luxury-gold text-luxury-gold'
-                  : 'border-luxury-gray text-luxury-muted hover:border-luxury-white hover:text-luxury-white'
-              }`}>
-              {s}
-            </button>
-          ))}
+      )}
+      {sizes.length > 0 && (
+        <div>
+          <p className="text-luxury-white text-xs tracking-luxury uppercase mb-4">Size</p>
+          <div className="flex flex-wrap gap-2">
+            {sizes.map(s => (
+              <button key={s} onClick={() => setFilter('size', s)}
+                className={`w-10 h-10 text-xs tracking-wide border transition-all ${
+                  params.get('size') === s
+                    ? 'border-luxury-gold text-luxury-gold'
+                    : 'border-luxury-gray text-luxury-muted hover:border-luxury-white hover:text-luxury-white'
+                }`}>
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       <div>
         <p className="text-luxury-white text-xs tracking-luxury uppercase mb-4">Price (₹)</p>
         <div className="flex flex-col gap-2">

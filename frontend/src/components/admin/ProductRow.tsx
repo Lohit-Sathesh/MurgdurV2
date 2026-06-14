@@ -7,8 +7,13 @@ interface Variant {
   id: string
   sku: string
   color: string | null
+  colorHex: string | null
   size: string | null
   stock: number
+}
+
+function emptyVariantInput() {
+  return { sku: '', color: '', colorHex: '#000000', size: '', stock: '' }
 }
 
 interface ProductImage {
@@ -55,6 +60,9 @@ export function ProductRow({ product, categories }: { product: Product; categori
   const [error, setError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [removingImageId, setRemovingImageId] = useState<string | null>(null)
+  const [newVariant, setNewVariant] = useState(emptyVariantInput())
+  const [addingVariant, setAddingVariant] = useState(false)
+  const [removingVariantId, setRemovingVariantId] = useState<string | null>(null)
 
   async function savePrice() {
     setSaving(true)
@@ -98,6 +106,49 @@ export function ProductRow({ product, categories }: { product: Product; categori
   async function updateStock(variantId: string, stock: number) {
     setVariants(prev => prev.map(v => v.id === variantId ? { ...v, stock } : v))
     await api.patch(`/admin/products/variants/${variantId}`, { stock })
+  }
+
+  async function updateVariantField(variantId: string, field: 'color' | 'colorHex' | 'size', value: string) {
+    setVariants(prev => prev.map(v => v.id === variantId ? { ...v, [field]: value } : v))
+    await api.patch(`/admin/products/variants/${variantId}`, { [field]: value || null })
+  }
+
+  async function addVariant() {
+    if (!newVariant.sku) {
+      setEditError('Variant SKU is required.')
+      return
+    }
+    setAddingVariant(true)
+    setEditError(null)
+    try {
+      const res = await api.post(`/admin/products/${product.id}/variants`, {
+        sku: newVariant.sku,
+        color: newVariant.color || undefined,
+        colorHex: newVariant.color ? newVariant.colorHex : undefined,
+        size: newVariant.size || undefined,
+        stock: Number(newVariant.stock) || 0,
+      })
+      setVariants(prev => [...prev, res.data])
+      setNewVariant(emptyVariantInput())
+    } catch (err: any) {
+      setEditError(err?.response?.data?.message ?? err?.message ?? 'Failed to add variant.')
+    } finally {
+      setAddingVariant(false)
+    }
+  }
+
+  async function removeVariant(variantId: string) {
+    if (!confirm('Remove this variant? This cannot be undone.')) return
+    setRemovingVariantId(variantId)
+    setEditError(null)
+    try {
+      await api.delete(`/admin/products/variants/${variantId}`)
+      setVariants(prev => prev.filter(v => v.id !== variantId))
+    } catch (err: any) {
+      setEditError(err?.response?.data?.message ?? err?.message ?? 'Failed to remove variant.')
+    } finally {
+      setRemovingVariantId(null)
+    }
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -261,23 +312,51 @@ export function ProductRow({ product, categories }: { product: Product; categori
                 </div>
               </div>
 
-              {variants.length > 0 && (
-                <div>
-                  <label className="block text-luxury-muted text-xs uppercase tracking-luxury mb-2">Variants & Stock</label>
-                  <div className="space-y-2">
-                    {variants.map(v => (
-                      <div key={v.id} className="flex items-center justify-between gap-3 border border-luxury-gray rounded px-3 py-2">
-                        <span className="text-luxury-muted text-xs">
-                          {v.sku} {v.color && `· ${v.color}`} {v.size && `· ${v.size}`}
-                        </span>
-                        <input type="number" value={v.stock} min={0}
-                          onChange={e => updateStock(v.id, Number(e.target.value))}
-                          className="w-20 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
-                      </div>
-                    ))}
+              <div>
+                <label className="block text-luxury-muted text-xs uppercase tracking-luxury mb-2">Colors, Sizes & Stock</label>
+                <div className="space-y-2">
+                  {variants.map(v => (
+                    <div key={v.id} className="flex items-center gap-2 border border-luxury-gray rounded px-3 py-2 flex-wrap">
+                      <span className="text-luxury-muted text-xs w-full md:w-auto md:flex-1 truncate">{v.sku}</span>
+                      <input type="color" value={v.colorHex || '#000000'}
+                        onChange={e => updateVariantField(v.id, 'colorHex', e.target.value)}
+                        className="w-8 h-8 bg-luxury-black border border-luxury-gray rounded cursor-pointer" />
+                      <input value={v.color ?? ''} placeholder="Color" onChange={e => updateVariantField(v.id, 'color', e.target.value)}
+                        className="w-24 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                      <input value={v.size ?? ''} placeholder="Size" onChange={e => updateVariantField(v.id, 'size', e.target.value)}
+                        className="w-16 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                      <input type="number" value={v.stock} min={0} placeholder="Stock"
+                        onChange={e => updateStock(v.id, Number(e.target.value))}
+                        className="w-20 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                      <button onClick={() => removeVariant(v.id)} disabled={removingVariantId === v.id}
+                        className="text-red-400 text-xs hover:text-red-300 disabled:opacity-50 transition-colors px-1">
+                        {removingVariantId === v.id ? '…' : '✕'}
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex items-center gap-2 border border-dashed border-luxury-gray rounded px-3 py-2 flex-wrap">
+                    <input value={newVariant.sku} placeholder="New variant SKU"
+                      onChange={e => setNewVariant(prev => ({ ...prev, sku: e.target.value }))}
+                      className="w-full md:flex-1 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                    <input type="color" value={newVariant.colorHex}
+                      onChange={e => setNewVariant(prev => ({ ...prev, colorHex: e.target.value }))}
+                      className="w-8 h-8 bg-luxury-black border border-luxury-gray rounded cursor-pointer" />
+                    <input value={newVariant.color} placeholder="Color"
+                      onChange={e => setNewVariant(prev => ({ ...prev, color: e.target.value }))}
+                      className="w-24 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                    <input value={newVariant.size} placeholder="Size"
+                      onChange={e => setNewVariant(prev => ({ ...prev, size: e.target.value }))}
+                      className="w-16 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                    <input type="number" value={newVariant.stock} min={0} placeholder="Stock"
+                      onChange={e => setNewVariant(prev => ({ ...prev, stock: e.target.value }))}
+                      className="w-20 bg-luxury-black border border-luxury-gray rounded text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none transition-colors" />
+                    <button onClick={addVariant} disabled={addingVariant}
+                      className="text-luxury-gold text-xs tracking-luxury uppercase hover:text-luxury-white disabled:opacity-50 transition-colors px-1">
+                      {addingVariant ? 'Adding…' : '+ Add'}
+                    </button>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

@@ -62,7 +62,7 @@ export default async function CollectionPage({
 
       <div className="max-w-7xl mx-auto px-8 py-16">
         <div className="flex gap-12">
-          <FilterSidebar />
+          <FilterSidebar category={params.category} />
           <div className="flex-1">
             <div className="flex justify-end mb-8">
               <SortDropdown />

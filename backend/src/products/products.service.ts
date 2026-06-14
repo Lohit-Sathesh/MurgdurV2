@@ -98,6 +98,60 @@ export class ProductsService {
     return product
   }
 
+  async getFilters(categorySlug?: string) {
+    const cacheKey = `filters:${categorySlug ?? 'all'}`
+    const cached = await this.redis.get(cacheKey)
+    if (cached) return JSON.parse(cached)
+
+    const where: any = {
+      isActive: true,
+      stock: { gt: 0 },
+      product: { isActive: true },
+    }
+
+    if (categorySlug) {
+      const cat = await this.prisma.category.findUnique({
+        where: { slug: categorySlug },
+        include: { children: true },
+      })
+      if (cat) {
+        const categoryIds = [cat.id, ...cat.children.map((c) => c.id)]
+        where.product.categoryId = { in: categoryIds }
+      }
+    }
+
+    const variants = await this.prisma.productVariant.findMany({
+      where,
+      select: { color: true, colorHex: true, size: true },
+    })
+
+    const colorMap = new Map<string, string | null>()
+    const sizes = new Set<string>()
+    for (const v of variants) {
+      if (v.color) colorMap.set(v.color, v.colorHex ?? colorMap.get(v.color) ?? null)
+      if (v.size) sizes.add(v.size)
+    }
+
+    const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+    const sortedSizes = Array.from(sizes).sort((a, b) => {
+      const ai = SIZE_ORDER.indexOf(a)
+      const bi = SIZE_ORDER.indexOf(b)
+      if (ai !== -1 && bi !== -1) return ai - bi
+      if (ai !== -1) return -1
+      if (bi !== -1) return 1
+      const an = Number(a), bn = Number(b)
+      if (!isNaN(an) && !isNaN(bn)) return an - bn
+      return a.localeCompare(b)
+    })
+
+    const result = {
+      colors: Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex })),
+      sizes: sortedSizes,
+    }
+    await this.redis.set(cacheKey, JSON.stringify(result), 60)
+    return result
+  }
+
   async getCategories() {
     const cached = await this.redis.get('categories:tree')
     if (cached) return JSON.parse(cached)

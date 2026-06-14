@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { LogoutButton } from '@/components/account/LogoutButton'
 import { AdminNavLink } from '@/components/admin/AdminNavLink'
-import { LayoutDashboard, Package, ShoppingBag, Image as ImageIcon, Users, Upload } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Image as ImageIcon, Users } from 'lucide-react'
 
 const NAV = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -11,7 +11,6 @@ const NAV = [
   { href: '/admin/catalog', label: 'Catalog', icon: ShoppingBag },
   { href: '/admin/homepage', label: 'Homepage', icon: ImageIcon },
   { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/media-upload', label: 'Media', icon: Upload },
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -28,8 +27,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <p className="text-luxury-muted text-xs tracking-luxury uppercase mt-1">Admin Console</p>
 
         <nav className="mt-12 flex flex-col gap-1 text-sm uppercase tracking-luxury">
-          {nav.map(({ href, label, icon }) => (
-            <AdminNavLink key={href} href={href} label={label} icon={icon} />
+          {nav.map(({ href, label, icon: Icon }) => (
+            <AdminNavLink key={href} href={href} label={label} icon={<Icon className="w-4 h-4" />} />
           ))}
         </nav>
 
