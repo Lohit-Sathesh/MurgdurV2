@@ -22,20 +22,26 @@ export default async function CollectionPage({
   searchParams: { sort?: string; color?: string; size?: string; minPrice?: string; maxPrice?: string }
 }) {
   let products = []
+  let total = 0
   let categoryName = params.category
   let category: { name: string; description: string | null; imageUrl: string | null } | null = null
 
+  const filterParams: Record<string, string | undefined> = {
+    category: params.category,
+    sort: searchParams.sort,
+    color: searchParams.color,
+    size: searchParams.size,
+    minPrice: searchParams.minPrice,
+    maxPrice: searchParams.maxPrice,
+  }
+
   try {
-    const query = new URLSearchParams({
-      category: params.category,
-      ...(searchParams.sort     && { sort:     searchParams.sort }),
-      ...(searchParams.color    && { color:    searchParams.color }),
-      ...(searchParams.size     && { size:     searchParams.size }),
-      ...(searchParams.minPrice && { minPrice: searchParams.minPrice }),
-      ...(searchParams.maxPrice && { maxPrice: searchParams.maxPrice }),
-    })
+    const query = new URLSearchParams(
+      Object.entries({ ...filterParams, limit: '24' }).filter(([, v]) => v) as [string, string][]
+    )
     const res = await api.get(`/products?${query}`)
     products = res.data.products
+    total = res.data.total ?? products.length
     category = res.data.category ?? null
     categoryName = category?.name ?? params.category
   } catch {}
@@ -67,7 +73,7 @@ export default async function CollectionPage({
             <div className="flex justify-end mb-8">
               <SortDropdown />
             </div>
-            <ProductGrid products={products} />
+            <ProductGrid products={products} total={total} query={filterParams} />
           </div>
         </div>
       </div>

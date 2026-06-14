@@ -289,4 +289,43 @@ export class EmailService {
 
     return this.sendEmail(email, 'Welcome to the Murgdur Private List', html);
   }
+
+  /**
+   * Send newsletter unsubscribe confirmation email
+   */
+  async sendNewsletterGoodbye(email: string) {
+    const html = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; background-color: #0a0a0a; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #000; color: #fff; padding: 30px; text-align: center; letter-spacing: 4px; }
+            .content { padding: 30px; background-color: #fff; }
+            .gold { color: #d4af37; }
+            .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>MURGDUR</h1>
+            </div>
+            <div class="content">
+              <p>Hello,</p>
+              <p>We're sorry to see you go.</p>
+              <p>You have been removed from the <span class="gold">Murgdur</span> Private List and will no longer receive news of our collections, private events, and editorial stories.</p>
+              <p>Should you ever wish to return, our doors — and our private list — are always open.</p>
+              <p>Until then, with warm regards,<br/>The Murgdur Team</p>
+            </div>
+            <div class="footer">
+              <p>&copy; 2026 Murgdur. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    return this.sendEmail(email, 'You have been unsubscribed from the Murgdur Private List', html);
+  }
 }

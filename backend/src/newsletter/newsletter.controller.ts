@@ -27,4 +27,26 @@ export class NewsletterController {
     await this.emailService.sendNewsletterWelcome(dto.email)
     return { success: true, message: 'Subscribed successfully' }
   }
+
+  @Post('unsubscribe')
+  @UseGuards(OptionalJwtAuthGuard)
+  async unsubscribe(@Body() dto: SubscribeDto, @Req() req: any) {
+    if (req.user) {
+      await this.prisma.user.update({
+        where: { id: req.user.id },
+        data: { newsletterSubscribed: false },
+      })
+    } else {
+      const user = await this.prisma.user.findUnique({ where: { email: dto.email } })
+      if (user?.newsletterSubscribed) {
+        await this.prisma.user.update({
+          where: { id: user.id },
+          data: { newsletterSubscribed: false },
+        })
+      }
+    }
+
+    await this.emailService.sendNewsletterGoodbye(dto.email)
+    return { success: true, message: 'Unsubscribed successfully' }
+  }
 }

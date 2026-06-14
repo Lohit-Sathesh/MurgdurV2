@@ -68,18 +68,21 @@ export class ProductsService {
                        : query.sort === 'price_desc' ? { price: 'desc' }
                        : { createdAt: 'desc' }
 
-    const products = await this.prisma.product.findMany({
-      where, orderBy,
-      take: query.limit ?? 20,
-      skip: query.offset ?? 0,
-      include: {
-        images: { orderBy: { sortOrder: 'asc' }, take: 1 },
-        variants: true,
-        category: true,
-      }
-    })
+    const [products, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where, orderBy,
+        take: query.limit ?? 20,
+        skip: query.offset ?? 0,
+        include: {
+          images: { orderBy: { sortOrder: 'asc' }, take: 1 },
+          variants: true,
+          category: true,
+        }
+      }),
+      this.prisma.product.count({ where }),
+    ])
 
-    const result = { products, total: products.length, category: categoryInfo }
+    const result = { products, total, category: categoryInfo }
     await this.redis.set(cacheKey, JSON.stringify(result), 60)
     return result
   }
