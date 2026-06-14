@@ -48,6 +48,41 @@ export default async function HomePage() {
   </div>
 </section>
 
+      <section className="py-20 border-y border-luxury-gray">
+  <div className="max-w-7xl mx-auto px-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+
+      <div>
+        <p className="text-4xl font-serif text-luxury-white">10K+</p>
+        <p className="text-luxury-muted text-sm mt-2">
+          Customers
+        </p>
+      </div>
+
+      <div>
+        <p className="text-4xl font-serif text-luxury-white">50+</p>
+        <p className="text-luxury-muted text-sm mt-2">
+          Countries
+        </p>
+      </div>
+
+      <div>
+        <p className="text-4xl font-serif text-luxury-white">99.9%</p>
+        <p className="text-luxury-muted text-sm mt-2">
+          Uptime
+        </p>
+      </div>
+
+      <div>
+        <p className="text-4xl font-serif text-luxury-white">24/7</p>
+        <p className="text-luxury-muted text-sm mt-2">
+          Support
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
       {/* Products */}
       <section className="px-8 py-24 md:py-32">
         <h2 className="font-serif text-4xl tracking-luxury text-luxury-white mb-16 text-center">
