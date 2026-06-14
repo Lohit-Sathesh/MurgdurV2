@@ -2,13 +2,56 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import Link from 'next/link'
-import { ChevronRight, ChevronLeft, X } from 'lucide-react'
+import { ChevronRight, ChevronLeft, ChevronDown, X } from 'lucide-react'
 
 interface Category {
   id: string
   name: string
   slug: string
   children?: Category[]
+}
+
+function CategoryNode({ category, onClose, depth = 0 }: { category: Category; onClose: () => void; depth?: number }) {
+  const [open, setOpen] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const hasChildren = !!category.children?.length
+
+  useEffect(() => {
+    const el = contentRef.current
+    if (!el) return
+    if (open) {
+      gsap.to(el, { height: 'auto', duration: 0.5, ease: 'power2.out' })
+    } else {
+      gsap.to(el, { height: 0, duration: 0.4, ease: 'power2.in' })
+    }
+  }, [open])
+
+  return (
+    <div className="border-b border-luxury-gray/50">
+      <div className="flex items-center justify-between">
+        <Link href={`/collections/${category.slug}`} onClick={onClose}
+          style={{ paddingLeft: depth * 16 }}
+          className={`flex-1 block py-4 text-sm tracking-luxury uppercase transition-colors ${
+            depth === 0 ? 'text-luxury-gold' : 'text-luxury-muted'
+          } hover:text-luxury-gold`}>
+          {category.name}
+        </Link>
+        {hasChildren && (
+          <button onClick={() => setOpen(o => !o)} aria-label={`Toggle ${category.name} subcategories`}
+            className="p-4 text-luxury-muted hover:text-luxury-gold transition-colors">
+            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+          </button>
+        )}
+      </div>
+      {hasChildren && (
+        <div ref={contentRef} style={{ height: 0, overflow: 'hidden' }}>
+          {category.children!.map(child => (
+            <CategoryNode key={child.id} category={child} onClose={onClose} depth={depth + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function CategoryDrawer({ categories, onClose }: { categories: Category[]; onClose: () => void }) {
@@ -93,10 +136,7 @@ export function CategoryDrawer({ categories, onClose }: { categories: Category[]
               </Link>
             )}
             {active?.children?.map(child => (
-              <Link key={child.id} href={`/collections/${child.slug}`} onClick={handleClose}
-                className="block py-4 border-b border-luxury-gray/50 text-luxury-muted text-sm tracking-luxury uppercase hover:text-luxury-gold transition-colors">
-                {child.name}
-              </Link>
+              <CategoryNode key={child.id} category={child} onClose={handleClose} />
             ))}
           </nav>
         </div>

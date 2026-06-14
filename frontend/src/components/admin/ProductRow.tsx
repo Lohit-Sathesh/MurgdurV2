@@ -15,13 +15,21 @@ interface Product {
   id: string
   name: string
   sku: string
+  description: string
+  material: string | null
+  categoryId: string
   price: string
   comparePrice: string | null
   isActive: boolean
   variants: Variant[]
 }
 
-export function ProductRow({ product }: { product: Product }) {
+interface CategoryOption {
+  id: string
+  label: string
+}
+
+export function ProductRow({ product, categories }: { product: Product; categories: CategoryOption[] }) {
   const router = useRouter()
   const [price, setPrice] = useState(product.price)
   const [comparePrice, setComparePrice] = useState(product.comparePrice ?? '')
@@ -29,6 +37,12 @@ export function ProductRow({ product }: { product: Product }) {
   const [variants, setVariants] = useState(product.variants)
   const [saving, setSaving] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState(product.name)
+  const [description, setDescription] = useState(product.description)
+  const [material, setMaterial] = useState(product.material ?? '')
+  const [categoryId, setCategoryId] = useState(product.categoryId)
+  const [editError, setEditError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleted, setDeleted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -48,6 +62,19 @@ export function ProductRow({ product }: { product: Product }) {
       await api.patch(`/admin/products/${product.id}`, {
         comparePrice: comparePrice === '' ? null : Number(comparePrice),
       })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function saveDetails() {
+    setSaving(true)
+    setEditError(null)
+    try {
+      await api.patch(`/admin/products/${product.id}`, { name, description, material: material || null, categoryId })
+      router.refresh()
+    } catch (err: any) {
+      setEditError(err?.response?.data?.message ?? err?.message ?? 'Failed to save changes.')
     } finally {
       setSaving(false)
     }
@@ -106,7 +133,11 @@ export function ProductRow({ product }: { product: Product }) {
             </button>
           )}
         </td>
-        <td className="py-3 px-4">
+        <td className="py-3 px-4 space-x-3 whitespace-nowrap">
+          <button onClick={() => setEditing(e => !e)}
+            className="text-luxury-gold text-xs tracking-luxury uppercase hover:text-luxury-white">
+            {editing ? 'Close' : 'Edit'}
+          </button>
           <button onClick={deleteProduct} disabled={deleting}
             className="text-red-400 text-xs tracking-luxury uppercase hover:text-red-300 disabled:opacity-50">
             {deleting ? 'Removing…' : 'Remove'}
@@ -116,6 +147,31 @@ export function ProductRow({ product }: { product: Product }) {
       {error && (
         <tr>
           <td colSpan={7} className="py-2 px-4 text-red-400 text-xs bg-luxury-gray/5">{error}</td>
+        </tr>
+      )}
+      {editing && (
+        <tr className="border-b border-luxury-gray/30 bg-luxury-gray/5">
+          <td colSpan={7} className="py-4 px-4">
+            <div className="grid grid-cols-2 gap-3 max-w-2xl">
+              <input value={name} onChange={e => setName(e.target.value)} placeholder="Name"
+                className="bg-luxury-black border border-luxury-gray text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none col-span-2" />
+              <select value={categoryId} onChange={e => setCategoryId(e.target.value)}
+                className="bg-luxury-black border border-luxury-gray text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none col-span-2">
+                {categories.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+              </select>
+              <input value={material} onChange={e => setMaterial(e.target.value)} placeholder="Material"
+                className="bg-luxury-black border border-luxury-gray text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none col-span-2" />
+              <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Description" rows={3}
+                className="bg-luxury-black border border-luxury-gray text-luxury-white text-sm px-2 py-1 focus:border-luxury-gold outline-none col-span-2" />
+            </div>
+            {editError && <p className="text-red-400 text-xs mt-2">{editError}</p>}
+            <div className="mt-3">
+              <button onClick={saveDetails} disabled={saving}
+                className="text-luxury-gold text-xs tracking-luxury uppercase hover:text-luxury-white disabled:opacity-50">
+                {saving ? 'Saving…' : 'Save Changes'}
+              </button>
+            </div>
+          </td>
         </tr>
       )}
       {expanded && variants.map(v => (

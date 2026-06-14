@@ -166,12 +166,18 @@ export class AdminController {
   @AdminOnly()
   async updateProduct(
     @Param('id') id: string,
-    @Body() body: { price?: number; comparePrice?: number | null; isActive?: boolean; isFeatured?: boolean },
+    @Body() body: {
+      name?: string; description?: string; material?: string; categoryId?: string;
+      price?: number; comparePrice?: number | null; isActive?: boolean; isFeatured?: boolean;
+    },
   ) {
-    return this.prisma.product.update({
+    const product = await this.prisma.product.update({
       where: { id },
       data: body,
+      include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } },
     });
+    await this.search.syncProduct(product);
+    return product;
   }
 
   /**

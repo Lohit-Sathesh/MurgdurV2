@@ -10,6 +10,9 @@ interface AdminProduct {
   id: string
   name: string
   sku: string
+  description: string
+  material: string | null
+  categoryId: string
   price: string
   comparePrice: string | null
   isActive: boolean
@@ -99,7 +102,7 @@ export default async function CatalogAdminPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map(p => <ProductRow key={p.id} product={p} />)}
+              {products.map(p => <ProductRow key={p.id} product={p} categories={productCategoryOptions} />)}
             </tbody>
           </table>
         </div>
