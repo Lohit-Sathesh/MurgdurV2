@@ -57,28 +57,28 @@ export default async function HomePage() {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
 
       <div>
-        <p className="text-4xl font-serif text-luxury-white">10K+</p>
+        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">10K+</p>
         <p className="text-luxury-muted text-sm mt-2">
           Customers
         </p>
       </div>
 
       <div>
-        <p className="text-4xl font-serif text-luxury-white">50+</p>
+        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">50+</p>
         <p className="text-luxury-muted text-sm mt-2">
           Countries
         </p>
       </div>
 
       <div>
-        <p className="text-4xl font-serif text-luxury-white">99.9%</p>
+        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">99.9%</p>
         <p className="text-luxury-muted text-sm mt-2">
           Uptime
         </p>
       </div>
 
       <div>
-        <p className="text-4xl font-serif text-luxury-white">24/7</p>
+        <p className="text-5xl font-serif text-luxury-white hover:text-luxury-gold transition-all duration-700">24/7</p>
         <p className="text-luxury-muted text-sm mt-2">
           Support
         </p>
