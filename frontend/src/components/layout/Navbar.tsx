@@ -51,9 +51,15 @@ export function Navbar() {
             </button>
           </div>
 
-          <Link href="/" className="font-serif text-2xl tracking-luxury text-luxury-white text-center">
-            MURGDUR
-          </Link>
+          <Link href="/" className="text-center group">
+  <div className="font-serif text-3xl tracking-[0.4em] text-luxury-white group-hover:text-luxury-gold transition-all duration-500">
+    MURGDUR
+  </div>
+
+  <div className="text-[10px] uppercase tracking-[0.3em] text-luxury-muted mt-1">
+    Maison Murgdur
+  </div>
+</Link>
 
           <div className="flex items-center justify-end gap-6">
             <button onClick={() => setSearchOpen(true)} aria-label="Search"
