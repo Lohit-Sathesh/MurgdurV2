@@ -41,7 +41,7 @@ export default async function HomePage() {
   <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none" />
 </div>
       {/* Products */}
-      <section className="px-8 py-32 md:py-40">
+      <section className="px-8 py-32 md:py-40 luxury-grain overflow-hidden">
         <div className="text-center mb-16">
   <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-8">
     Latest Collection
@@ -63,7 +63,7 @@ export default async function HomePage() {
       <ScrollVideoPlayer videoUrl={videoSlide?.mediaUrl} />
 
       {/* Products again */}
-      <section className="px-8 py-32 md:py-40">
+      <section className="px-8 py-32 md:py-40 luxury-grain overflow-hidden">
        <div className="text-center mb-16">
   <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-8">
     Curated Pieces
@@ -90,7 +90,7 @@ export default async function HomePage() {
         linkLabel="Explore the Collection"
       />
 
-      <section className="py-32 border-t border-b border-luxury-gray bg-gradient-to-b from-luxury-black to-[#111111]">
+      <section className="py-32 border-t border-b border-luxury-gray bg-gradient-to-b from-luxury-black to-[#111111] luxury-grain overflow-hidden">
   <div className="max-w-5xl mx-auto px-8 text-center">
 
     <p className="text-luxury-gold uppercase tracking-[0.4em] text-xs mb-6">
@@ -113,7 +113,7 @@ export default async function HomePage() {
 </section>
       {/* Remaining image / video sections from admin */}
       {scrollSlides.length > 2 && <ScrollGallery slides={scrollSlides.slice(2)} />}
-      <section className="py-32 border-t border-luxury-gray bg-gradient-to-b from-[#111111] to-luxury-black">
+      <section className="py-32 border-t border-luxury-gray bg-gradient-to-b from-[#111111] to-luxury-black luxury-grain overflow-hidden">
   <div className="max-w-4xl mx-auto px-8">
     
     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-12 text-center shadow-2xl">
