@@ -41,13 +41,13 @@ export default async function HomePage() {
   <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none" />
 </div>
       {/* Products */}
-      <section className="px-8 py-24 md:py-32">
+      <section className="px-8 py-32 md:py-40">
         <div className="text-center mb-16">
-  <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
+  <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-8">
     Latest Collection
   </p>
 
-  <h2 className="font-serif text-5xl text-luxury-white mb-4">
+  <h2 className="font-serif text-5xl text-luxury-white mb-8">
     New Arrivals
   </h2>
 
@@ -63,13 +63,13 @@ export default async function HomePage() {
       <ScrollVideoPlayer videoUrl={videoSlide?.mediaUrl} />
 
       {/* Products again */}
-      <section className="px-8 py-24 md:py-32">
+      <section className="px-8 py-32 md:py-40">
        <div className="text-center mb-16">
-  <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
+  <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-8">
     Curated Pieces
   </p>
 
-  <h2 className="font-serif text-5xl text-luxury-white mb-4">
+  <h2 className="font-serif text-5xl text-luxury-white mb-8">
     The Selection
   </h2>
 
@@ -117,7 +117,7 @@ export default async function HomePage() {
   <div className="max-w-4xl mx-auto px-8">
     
     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-12 text-center shadow-2xl">
-    <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-4">
+    <p className="text-luxury-gold uppercase tracking-[0.3em] text-xs mb-8">
       Exclusive Access
     </p>
 
@@ -131,7 +131,7 @@ export default async function HomePage() {
     </p>
 
     <NewsletterForm
-      layoutClassName="flex flex-col md:flex-row gap-4 justify-center"
+      layoutClassName="flex flex-col md:flex-row gap-8 justify-center"
       inputClassName="bg-black/40 border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white rounded-full focus:border-luxury-gold focus:outline-none transition-all duration-500"
       buttonClassName="px-8 py-4 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500"
       buttonLabel="Subscribe"
