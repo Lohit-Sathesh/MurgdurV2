@@ -132,8 +132,8 @@ export default async function HomePage() {
 
     <NewsletterForm
       layoutClassName="flex flex-col md:flex-row gap-8 justify-center"
-      inputClassName="bg-black/40 border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white rounded-full focus:border-luxury-gold focus:outline-none transition-all duration-500"
-      buttonClassName="px-8 py-4 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-500"
+      inputClassName="bg-black/40 border border-luxury-gray px-6 py-4 min-w-[320px] text-luxury-white rounded-full focus:border-luxury-gold focus:outline-none transition-all duration-1000 ease-out"
+      buttonClassName="px-8 py-4 border border-luxury-gold text-luxury-gold rounded-full hover:bg-luxury-gold hover:text-black transition-all duration-1000 ease-out"
       buttonLabel="Subscribe"
     />
 
