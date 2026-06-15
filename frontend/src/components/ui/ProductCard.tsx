@@ -33,7 +33,7 @@ export function ProductCard({ product, onClick, onWishlistChange }: { product: P
   onClick={onClick}
   className="group block transition-all duration-1000 ease-out hover:-translate-y-2"
 >
-      <div className="relative aspect-[3/4] overflow-hidden bg-luxury-gray border border-transparent group-hover:border-luxury-gold group-hover:shadow-[0_0_30px_rgba(212,175,55,0.25)] transition-all duration-700">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-[20px] bg-luxury-gray border border-transparent group-hover:border-luxury-gold group-hover:shadow-[0_0_30px_rgba(212,175,55,0.25)] transition-all duration-700">
         {product.images?.[0] && (
           <Image src={product.images[0].url} alt={product.name} fill
             className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
