@@ -49,7 +49,7 @@ export function Navbar() {
           </div>
 
           <Link href="/" className="text-center group">
-  <div className="font-serif text-3xl tracking-[0.4em] text-luxury-white group-hover:text-luxury-gold transition-all duration-500">
+  <div className="font-serif text-4xl tracking-[0.5em] text-luxury-white group-hover:text-luxury-gold transition-all duration-700">
     MURGDUR
   </div>
 
