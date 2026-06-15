@@ -31,19 +31,19 @@ export function ProductCard({ product, onClick, onWishlistChange }: { product: P
     <Link
   href={`/products/${product.slug}`}
   onClick={onClick}
-  className="group block transition-all duration-500 hover:-translate-y-3"
+  className="group block transition-all duration-1000 ease-out hover:-translate-y-2"
 >
       <div className="relative aspect-[3/4] overflow-hidden bg-luxury-gray border border-transparent group-hover:border-luxury-gold group-hover:shadow-[0_0_30px_rgba(212,175,55,0.25)] transition-all duration-700">
         {product.images?.[0] && (
           <Image src={product.images[0].url} alt={product.name} fill
-            className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+            className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
         )}
         <div className="absolute top-3 left-3 space-y-1">
           {totalStock === 0 && <Badge variant="out-of-stock">Out of Stock</Badge>}
           {totalStock > 0 && totalStock < 10 && <Badge variant="low-stock">Low Stock</Badge>}
         </div>
         <button onClick={handleWishlistClick} aria-label="Toggle wishlist"
-          className="absolute top-3 right-3 p-2 rounded-full bg-luxury-black/40 backdrop-blur-sm hover:bg-luxury-black/70 transition-colors">
+          className="absolute top-3 right-3 p-2 rounded-full bg-luxury-black/40 backdrop-blur-sm hover:bg-luxury-black/70 transition-all duration-700 ease-out">
           <Heart className={`w-4 h-4 transition-colors ${inWishlist ? 'fill-luxury-gold text-luxury-gold' : 'text-luxury-white'}`} />
         </button>
       </div>
