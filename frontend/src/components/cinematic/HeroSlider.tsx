@@ -87,8 +87,9 @@ export function HeroSlider({ slides }: { slides?: HeroSlide[] }) {
             {slide.subheading && (
               <p className="text-luxury-gold text-xs tracking-luxury uppercase mb-6">{slide.subheading}</p>
             )}
-            <h1 className="font-serif text-6xl md:text-8xl tracking-luxury text-luxury-white text-center mb-12">
-              {slide.headline}
+            <h1 className="font-serif text-7xl md:text-[9rem] tracking-[0.08em] text-[#D8C7A3] text-center mb-12 drop-shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+  {slide.headline}
+</h1>
             </h1>
             {slide.linkUrl && (
               <Link href={slide.linkUrl}
