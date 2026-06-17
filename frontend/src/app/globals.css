@@ -22,8 +22,8 @@ html { scroll-behavior: auto; } /* Lenis handles scroll */
 
 body {
   font-family: 'LuxurySans', sans-serif;
-  background: #0a0a0a;
-  color: #f5f0eb;
+  background: #000000;
+  color: #ffffff;
   overflow-x: hidden;
 }
 
