@@ -6,7 +6,6 @@ module.exports = {
       colors: {
         'luxury-black': '#0a0a0a',
         'luxury-white': '#f5f0eb',
-        'luxury-gold':  '#c9a96e',
         'luxury-gray':  '#2a2a2a',
         'luxury-muted': '#888880',
       },
