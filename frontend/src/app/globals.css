@@ -30,8 +30,8 @@ body {
 h1, h2, h3 { font-family: 'LuxurySerif', serif; font-weight: 300; letter-spacing: 0.05em; }
 
 ::selection {
-  background: #d4af37;
-  color: #000;
+  background: #ffffff;
+  color: #000000;
 }
 
 ::-webkit-scrollbar { display: none; }
